@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watchlist Momentum &amp; Catalyst Dashboard</title>
+<style>
+*{margin:0;padding:0}
+
+:root{
+  --ground:#f5f6f8; --surface:#ffffff; --surface-2:#fbfcfd; --line:#e6e9ef;
+  --ink:#191d24; --ink-2:#5a6472; --ink-3:#8a94a3;
+  --accent:#3a5bd9; --accent-soft:#eaeefc;
+  --up:#0f9d58; --up-bg:rgba(15,157,88,.12); --up-ink:#0b7a44;
+  --down:#dc3545; --down-bg:rgba(220,53,69,.12); --down-ink:#b3172a;
+  --flat:#8a94a3;
+  --chip:#eef1f6; --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 16px rgba(20,30,50,.05);
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0c0f14; --surface:#141922; --surface-2:#111620; --line:#232b38;
+    --ink:#e7ecf3; --ink-2:#9aa6b6; --ink-3:#6b7688;
+    --accent:#6f8dff; --accent-soft:#1a2236;
+    --up:#2ec77d; --up-bg:rgba(46,199,125,.14); --up-ink:#57d996;
+    --down:#ff6b7a; --down-bg:rgba(255,107,122,.15); --down-ink:#ff8a96;
+    --flat:#6b7688;
+    --chip:#1b2230; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#f5f6f8; --surface:#ffffff; --surface-2:#fbfcfd; --line:#e6e9ef;
+  --ink:#191d24; --ink-2:#5a6472; --ink-3:#8a94a3;
+  --accent:#3a5bd9; --accent-soft:#eaeefc;
+  --up:#0f9d58; --up-bg:rgba(15,157,88,.12); --up-ink:#0b7a44;
+  --down:#dc3545; --down-bg:rgba(220,53,69,.12); --down-ink:#b3172a;
+  --flat:#8a94a3; --chip:#eef1f6; --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 16px rgba(20,30,50,.05);
+}
+:root[data-theme="dark"]{
+  --ground:#0c0f14; --surface:#141922; --surface-2:#111620; --line:#232b38;
+  --ink:#e7ecf3; --ink-2:#9aa6b6; --ink-3:#6b7688;
+  --accent:#6f8dff; --accent-soft:#1a2236;
+  --up:#2ec77d; --up-bg:rgba(46,199,125,.14); --up-ink:#57d996;
+  --down:#ff6b7a; --down-bg:rgba(255,107,122,.15); --down-ink:#ff8a96;
+  --flat:#6b7688; --chip:#1b2230; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  line-height:1.5;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 72px;}
+.tnum{font-variant-numeric:tabular-nums;font-family:var(--mono);}
+
+/* Header */
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;
+  padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:24px;}
+.brand{display:flex;flex-direction:column;gap:6px;}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;
+  display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--accent);display:inline-block;}
+h1{font-size:clamp(24px,3.4vw,34px);margin:0;font-weight:750;letter-spacing:-.02em;text-wrap:balance;}
+.sub{color:var(--ink-2);font-size:14px;margin:0;}
+.meta{text-align:right;font-size:12.5px;color:var(--ink-3);display:flex;flex-direction:column;gap:3px;}
+.meta b{color:var(--ink-2);font-weight:600;}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--up);
+  box-shadow:0 0 0 3px var(--up-bg);margin-right:6px;vertical-align:middle;}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:30px;}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;}
+.kpi .lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;}
+.kpi .val{font-size:26px;font-weight:700;letter-spacing:-.01em;}
+.kpi .val small{font-size:14px;color:var(--ink-3);font-weight:600;}
+.kpi .tag{font-size:12.5px;color:var(--ink-2);}
+.kpi.up .val,.up-ink{color:var(--up-ink);}
+.kpi.down .val,.down-ink{color:var(--down-ink);}
+
+/* Section heads */
+.sec{margin:38px 0 16px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.sec h2{font-size:18px;margin:0;font-weight:700;letter-spacing:-.01em;}
+.sec p{margin:0;color:var(--ink-3);font-size:13px;}
+
+/* Movers */
+.movers{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:720px){.movers{grid-template-columns:1fr;}}
+.mcol{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:var(--shadow);}
+.mcol h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;margin:10px 12px 6px;
+  color:var(--ink-2);display:flex;align-items:center;gap:7px;}
+.mrow{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;text-decoration:none;color:inherit;}
+.mrow:hover{background:var(--surface-2);}
+.mrow .tk{font-weight:700;font-size:14px;min-width:74px;}
+.mrow .nm{color:var(--ink-3);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mrow .pc{font-weight:700;font-size:14.5px;min-width:78px;text-align:right;}
+.spark{flex-shrink:0;}
+
+/* Controls */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.search{flex:1;min-width:180px;position:relative;}
+.search input{width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font-size:14px;font-family:var(--sans);}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent;}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-3);}
+.seg{display:flex;gap:2px;background:var(--chip);border-radius:10px;padding:3px;}
+.seg button{border:0;background:transparent;color:var(--ink-2);font-size:12.5px;font-weight:600;
+  padding:6px 11px;border-radius:8px;cursor:pointer;font-family:var(--sans);}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
+
+/* Table */
+.tblwrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px;}
+thead th{position:sticky;top:0;background:var(--surface-2);text-align:right;padding:12px 14px;
+  font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:700;
+  border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;user-select:none;}
+thead th:first-child,tbody td:first-child{text-align:left;}
+thead th.sortable:hover{color:var(--ink);}
+thead th .ar{opacity:.4;font-size:9px;margin-left:3px;}
+thead th.act .ar{opacity:1;color:var(--accent);}
+tbody td{padding:10px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+tbody tr:last-child td{border-bottom:0;}
+tbody tr:hover{background:var(--surface-2);}
+.tkcell{display:flex;flex-direction:column;gap:1px;}
+.tkcell b{font-size:13.5px;font-weight:700;}
+.tkcell span{font-size:11px;color:var(--ink-3);max-width:220px;overflow:hidden;text-overflow:ellipsis;}
+.pill{display:inline-block;min-width:64px;padding:4px 8px;border-radius:7px;font-weight:700;
+  font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12.5px;}
+.pill.u{background:var(--up-bg);color:var(--up-ink);}
+.pill.d{background:var(--down-bg);color:var(--down-ink);}
+.pill.f{color:var(--flat);}
+td.price{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink-2);}
+.vol{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;}
+.vol.hi{color:var(--accent);}
+
+/* Catalysts */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;border-left:3px solid var(--line);}
+.card.g{border-left-color:var(--up);}
+.card.b{border-left-color:var(--down);}
+.card .ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.card .ct{font-weight:800;font-size:15px;letter-spacing:-.01em;}
+.card .cm{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;}
+.chip{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;padding:3px 8px;
+  border-radius:20px;background:var(--chip);color:var(--ink-2);}
+.card h4{margin:0;font-size:13.5px;font-weight:650;line-height:1.35;}
+.card p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.5;}
+.card .src{margin-top:auto;font-size:11.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:8px;padding-top:4px;}
+.card .src a{color:var(--accent);text-decoration:none;}
+.card .src a:hover{text-decoration:underline;}
+
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-3);font-size:12px;
+  display:flex;flex-direction:column;gap:6px;}
+.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-2);}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px;}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Watchlist Intelligence</div>
+      <h1>Momentum &amp; Catalyst Dashboard</h1>
+      <p class="sub">Multi-window price momentum, volume shifts and the news behind the moves.</p>
+    </div>
+    <div class="meta">
+      <div><span class="dot"></span><b id="mstat"></b></div>
+      <div>Updated <b id="mstamp"></b></div>
+      <div>Source: Yahoo Finance · daily close</div>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="sec"><div><h2>Standout movers</h2><p>Largest 1-week swings in the list</p></div></div>
+  <div class="movers" id="movers"></div>
+
+  <div class="sec"><div><h2>Full watchlist</h2><p>Click any column to sort · search to filter</p></div></div>
+  <div class="controls">
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" placeholder="Filter by ticker or name…" autocomplete="off">
+    </div>
+    <div class="seg" id="filt">
+      <button data-f="all" class="on">All</button>
+      <button data-f="up">Gainers</button>
+      <button data-f="down">Losers</button>
+      <button data-f="vol">Volume spikes</button>
+    </div>
+  </div>
+  <div class="tblwrap"><div class="scroll"><table>
+    <thead><tr>
+      <th class="sortable" data-k="ticker">Ticker</th>
+      <th class="sortable" data-k="price">Price</th>
+      <th class="sortable act" data-k="d3">3-Day <span class="ar">▼</span></th>
+      <th class="sortable" data-k="w1">1-Week <span class="ar"></span></th>
+      <th class="sortable" data-k="m1">1-Month <span class="ar"></span></th>
+      <th class="sortable" data-k="vol_chg">Vol vs 20d <span class="ar"></span></th>
+      <th>30-Day trend</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div></div>
+
+  <div class="sec"><div><h2>Catalysts &amp; news</h2><p>Why the notable names moved — earnings, guidance, regulatory &amp; sector drivers</p></div></div>
+  <div class="cats" id="cats"></div>
+
+  <footer>
+    <div class="legend">
+      <span><i style="background:var(--up)"></i>Gain</span>
+      <span><i style="background:var(--down)"></i>Loss</span>
+      <span><i style="background:var(--accent)"></i>Elevated volume</span>
+      <span id="failnote"></span>
+    </div>
+    <div>% changes use trading-day look-backs (3D ≈ 3 sessions, 1W ≈ 5, 1M ≈ 21). Volume compares the latest session to its trailing 20-day average.</div>
+    <div>Informational only — not investment advice. Data may be delayed and some tickers can fail to resolve.</div>
+  </footer>
+</div>
+<script id="payload" type="application/json">{"rows":[{"ticker":"VENU","name":"Venu Holding Corporation","currency":"USD","exchange":"NYSE American","price":2.240000009536743,"d1":7.177038350599668,"d3":-0.4444440205891927,"w1":-8.196723073504641,"m1":-1.3215846538256728,"vol_chg":-11.77101660730378,"vol_latest":411200,"spark":[2.27,2.18,2.18,2.44,2.33,2.43,2.66,2.66,2.65,2.81,2.59,2.59,2.34,2.36,2.41,2.44,2.44,2.37,2.25,2.3,2.09,2.24]},{"ticker":"DUKR","name":"DUKE Robotics Corp.","currency":"USD","exchange":"NasdaqCM","price":5.135000228881836,"d1":-0.6769796304761103,"d3":-4.730976696109371,"w1":-6.9746332133149185,"m1":-10.850694013276604,"vol_chg":-48.88645491055129,"vol_latest":14000,"spark":[5.76,5.14,4.8,5.5,5.26,5.49,5.64,5.59,5.43,5.44,5.1,5.26,5.44,5.22,5.47,5.41,5.52,5.45,5.39,5.34,5.17,5.135]},{"ticker":"LNZA","name":"LanzaTech Global, Inc.","currency":"USD","exchange":"NasdaqCM","price":5.360000133514404,"d1":-0.7407400212333817,"d3":-2.722324666724591,"w1":-4.114490389897536,"m1":-21.407624653934743,"vol_chg":-30.85047248471373,"vol_latest":62200,"spark":[6.82,6.76,6.31,5.83,5.78,5.95,6.03,5.73,5.82,5.75,5.87,5.54,5.57,5.71,5.5,5.54,5.59,5.53,5.51,5.45,5.4,5.36]},{"ticker":"SIDU","name":"Sidus Space, Inc.","currency":"USD","exchange":"NasdaqCM","price":1.840000033378601,"d1":9.523814930126678,"d3":-0.5405400180747055,"w1":-6.598984433687503,"m1":-34.5195704324981,"vol_chg":-12.165299611054184,"vol_latest":5580200,"spark":[2.81,2.73,2.65,2.53,2.31,2.25,2.26,2.16,2.07,2.07,2.0,1.9,1.87,1.75,2.05,1.99,1.97,1.85,1.85,1.775,1.68,1.84]},{"ticker":"STLTECH.NS","name":"STERLITE TECHNOLOGIES LTD","currency":"INR","exchange":"NSE","price":557.0499877929688,"d1":4.99481681457334,"d3":5.093859187210448,"w1":-1.2585369695708142,"m1":-0.9864891634928602,"vol_chg":-42.360868783169295,"vol_latest":1458354,"spark":[562.6,576.8,585.15,555.9,528.15,554.35,543.05,518.15,533.85,540.05,541.35,520.4,503.6,528.75,552.95,548.85,564.15,555.4,530.05,519.95,530.55,557.05]},{"ticker":"HFCL.NS","name":"HFCL LIMITED","currency":"INR","exchange":"NSE","price":193.9199981689453,"d1":4.997561105381068,"d3":2.9353993296953824,"w1":-1.4884469615050646,"m1":-5.215307864478024,"vol_chg":30.9196859641489,"vol_latest":33042791,"spark":[204.59,214.48,224.95,226.04,214.74,214.68,217.25,214.63,212.78,223.08,224.38,213.17,208.03,217.97,217.9,207.01,196.85,192.54,188.39,193.56,184.69,193.92]},{"ticker":"TEJASNET.NS","name":"TEJAS NETWORKS LIMITED","currency":"INR","exchange":"NSE","price":513.0,"d1":1.163477386210087,"d3":3.783130218255945,"w1":3.5526859750412534,"m1":-14.840640901537045,"vol_chg":-4.754078365022272,"vol_latest":2045111,"spark":[602.4,593.6,570.0,546.95,535.4,542.35,564.65,556.25,543.25,550.1,547.35,538.9,543.4,537.35,520.55,497.3,495.4,513.05,494.3,520.0,507.1,513.0]},{"ticker":"HLIT","name":"Harmonic Inc.","currency":"USD","exchange":"NasdaqGS","price":11.220000267028809,"d1":5.849055313648177,"d3":-1.1453754191335461,"w1":-3.275862947797349,"m1":-31.292098472450842,"vol_chg":-33.9609108268275,"vol_latest":1035800,"spark":[16.33,15.78,14.07,13.95,13.43,13.73,14.14,14.05,13.67,13.67,12.99,12.2,12.03,12.03,12.47,12.0,11.6,11.19,11.35,11.06,10.6,11.22]},{"ticker":"NBIS","name":"Nebius Group N.V.","currency":"USD","exchange":"NasdaqGS","price":188.42999267578125,"d1":27.12858664412267,"d3":0.29273354198164786,"w1":-14.725984688039699,"m1":-31.77029238726967,"vol_chg":101.4322856180958,"vol_latest":42061700,"spark":[276.17,229.18,215.62,213.02,195.19,216.48,216.2,219.65,210.51,194.09,199.51,171.77,177.71,182.62,216.92,218.16,220.97,187.77,187.88,169.69,148.22,188.43]},{"ticker":"PENG","name":"Penguin Solutions, Inc.","currency":"USD","exchange":"NasdaqGS","price":51.43000030517578,"d1":17.688785829019686,"d3":-2.019434824529382,"w1":-11.950007807688054,"m1":-32.33785178298072,"vol_chg":-43.77182438867141,"vol_latest":2860600,"spark":[76.01,68.81,61.47,67.71,62.71,78.47,81.39,78.35,77.21,77.8,72.85,65.97,60.41,53.23,58.1,59.2,58.41,53.85,52.49,48.13,43.7,51.43]},{"ticker":"NOK","name":"Nokia Corporation Sponsored","currency":"USD","exchange":"NYSE","price":9.09000015258789,"d1":8.085616141658173,"d3":-2.0474093302852747,"w1":-6.5775891033735965,"m1":-31.55120229393148,"vol_chg":11.916823285953539,"vol_latest":106636000,"spark":[13.28,12.91,12.07,12.51,11.85,11.95,12.9,12.44,11.69,11.7,11.25,10.38,10.12,10.08,10.63,10.28,9.73,9.1,9.28,8.93,8.41,9.09]},{"ticker":"SLOIF","name":"Soitec, Bernin","currency":"USD","exchange":"OTC Markets OTCPK","price":118.0,"d1":11.215835718208272,"d3":-4.0650406504065035,"w1":-11.131193639987726,"m1":-11.178024404413367,"vol_chg":-73.88465723612623,"vol_latest":1200,"spark":[132.85,132.67,125.0,134.0,111.02,116.07,123.42,113.0,108.94,117.2,111.11,99.42,104.61,97.01,109.63,114.0,132.78,130.35,123.0,112.01,106.1,118.0]},{"ticker":"TE","name":"T1 Energy Inc.","currency":"USD","exchange":"NYSE","price":4.269999980926514,"d1":14.784944841028965,"d3":-12.857144942436511,"w1":-24.823941725796296,"m1":-54.957803933403746,"vol_chg":97.55962968428244,"vol_latest":75844100,"spark":[9.48,9.18,8.56,8.65,6.95,7.35,7.26,6.85,6.55,6.84,6.66,5.94,5.84,6.03,6.1,6.03,5.68,5.0,4.9,4.15,3.72,4.27]},{"ticker":"FLNC","name":"Fluence Energy, Inc.","currency":"USD","exchange":"NasdaqGS","price":13.470000267028809,"d1":13.288476686994874,"d3":-0.29607669263776143,"w1":-6.588070764485698,"m1":-32.24345656104452,"vol_chg":-30.176926264783706,"vol_latest":5475700,"spark":[19.88,18.36,17.0,17.82,16.2,15.34,16.74,16.16,15.16,15.61,15.37,14.42,14.07,14.28,15.28,14.66,14.42,13.44,13.51,12.62,11.89,13.47]},{"ticker":"MITK","name":"Mitek Systems, Inc.","currency":"USD","exchange":"NasdaqCM","price":17.06999969482422,"d1":2.032278313753272,"d3":0.3527305416522438,"w1":7.291011053031486,"m1":-15.201190231077238,"vol_chg":-19.21466764303577,"vol_latest":584700,"spark":[20.13,20.14,19.21,19.87,19.43,18.47,19.44,19.33,19.38,19.46,19.33,19.25,18.97,18.7,18.44,17.16,15.91,16.87,17.01,16.78,16.73,17.07]},{"ticker":"HUMA","name":"Humacyte, Inc.","currency":"USD","exchange":"NasdaqGS","price":0.671999990940094,"d1":7.519998550415038,"d3":-0.29674091718987283,"w1":5.1643180664290504,"m1":-13.84615184757594,"vol_chg":-44.90747779249832,"vol_latest":4058600,"spark":[0.78,0.673,0.71,0.771,0.771,0.733,0.7,0.694,0.691,0.707,0.682,0.66,0.665,0.656,0.671,0.645,0.639,0.625,0.674,0.631,0.625,0.672]},{"ticker":"AAOI","name":"Applied Optoelectronics, Inc.","currency":"USD","exchange":"NasdaqGM","price":90.11000061035156,"d1":17.76006869247108,"d3":-7.8818228465815485,"w1":-19.559004364664908,"m1":-39.18061664209016,"vol_chg":23.492581827603466,"vol_latest":10819500,"spark":[148.16,139.0,120.95,123.36,114.41,114.44,122.21,119.92,111.88,125.45,109.09,100.24,102.41,103.02,119.26,110.52,112.02,100.15,97.82,88.14,76.52,90.11]},{"ticker":"BE","name":"Bloom Energy Corporation","currency":"USD","exchange":"NYSE","price":207.1199951171875,"d1":26.48549320133588,"d3":10.064833233381153,"w1":-4.684771188036098,"m1":-31.57582201366808,"vol_chg":120.09057983499159,"vol_latest":35130000,"spark":[302.7,289.5,270.89,295.05,269.57,254.29,257.02,244.61,233.49,243.4,239.38,206.73,214.96,197.06,226.26,218.22,217.3,184.89,188.18,166.84,163.75,207.12]},{"ticker":"SWMR","name":"Swarmer, Inc","currency":"USD","exchange":"NasdaqCM","price":38.29999923706055,"d1":3.9630811032179,"d3":-4.393415067139526,"w1":-6.127451094972407,"m1":-13.56353407800423,"vol_chg":-26.728920907523428,"vol_latest":214600,"spark":[44.31,41.22,42.93,42.37,40.21,41.49,44.37,42.0,39.98,41.6,37.68,35.76,36.54,39.08,46.18,41.12,40.8,38.84,40.06,38.3,36.84,38.3]},{"ticker":"AMPX","name":"Amprius Technologies, Inc.","currency":"USD","exchange":"NYSE","price":9.470000267028809,"d1":12.203800211548476,"d3":-2.471676314884597,"w1":-4.43995547081872,"m1":-31.67387805477683,"vol_chg":-3.1959012821782937,"vol_latest":6009400,"spark":[13.86,13.59,12.38,13.09,11.72,11.58,11.88,11.53,11.08,11.12,11.34,10.1,10.16,10.14,10.88,10.17,9.91,9.24,9.71,9.13,8.44,9.47]},{"ticker":"KRKNF","name":"Kraken Robotics Inc.","currency":"USD","exchange":"OTC Markets OTCQB","price":4.114999771118164,"d1":2.363178871701268,"d3":-5.402302038308989,"w1":-7.735431929999451,"m1":-8.555560641818577,"vol_chg":-11.361412864406178,"vol_latest":874300,"spark":[4.5,4.52,4.5,4.665,4.301,4.29,4.42,4.77,4.66,4.74,4.41,4.18,4.185,4.15,4.2,4.21,4.46,4.32,4.35,4.25,4.02,4.115]},{"ticker":"AXTI","name":"AXT Inc","currency":"USD","exchange":"NasdaqGS","price":46.939998626708984,"d1":26.967803832320897,"d3":-1.9632464921397559,"w1":-11.316836659608072,"m1":-34.877916989056565,"vol_chg":126.83346356539604,"vol_latest":18172400,"spark":[72.08,65.03,56.62,63.52,58.15,60.12,62.55,57.21,50.46,57.57,53.42,45.57,45.86,48.83,56.51,52.98,52.93,47.23,47.88,42.76,36.97,46.94]},{"ticker":"COHR","name":"Coherent Corp.","currency":"USD","exchange":"NYSE","price":249.05999755859375,"d1":12.163924402441983,"d3":-8.200951015524135,"w1":-20.484005942168597,"m1":-36.86211960659425,"vol_chg":37.61605596790895,"vol_latest":6326100,"spark":[394.47,368.65,333.36,335.7,314.13,317.05,327.24,324.5,307.39,310.77,299.38,276.96,277.6,285.4,317.22,312.19,313.22,282.39,271.31,243.33,222.05,249.06]},{"ticker":"VYX","name":"NCR Voyix Corporation","currency":"USD","exchange":"NYSE","price":8.15999984741211,"d1":-5.773672157158482,"d3":-0.609015718666775,"w1":7.368420392192293,"m1":-0.12240182115606803,"vol_chg":-10.422715012251118,"vol_latest":1740200,"spark":[8.17,8.5,8.7,8.76,8.52,7.99,7.99,8.06,8.15,7.97,7.97,8.29,8.21,8.09,7.94,7.79,7.6,7.67,8.21,8.6,8.66,8.16]},{"ticker":"NATL","name":"NCR Atleos Corporation","currency":"USD","exchange":"NYSE","price":46.88999938964844,"d1":-1.3049862214029173,"d3":-0.2976810403619802,"w1":-1.3880123196673038,"m1":8.01658501374952,"vol_chg":-17.129934571641854,"vol_latest":471800,"spark":[43.41,44.09,44.57,44.96,44.88,44.79,44.77,44.93,45.47,45.7,46.2,47.11,47.43,47.21,47.94,47.81,47.55,47.75,47.03,47.06,47.51,46.89]},{"ticker":"FLTR.L","name":"FLUTTER ENTERTAINMENT PLC ORD E","currency":"GBp","exchange":"LSE","price":7606.0,"d1":0.23721665788086455,"d3":-7.850739035619093,"w1":0.10529086601737299,"m1":-2.4621697871249038,"vol_chg":-67.25220745396902,"vol_latest":14900,"spark":[7798.0,7810.0,7956.0,8052.0,7958.0,8160.0,8420.0,8698.0,8032.0,8420.0,8088.0,7714.0,7976.0,7736.0,7464.0,7472.0,7598.0,8088.0,8254.0,8212.0,7588.0,7606.0]},{"ticker":"LODE","name":"Comstock Inc.","currency":"USD","exchange":"NYSE American","price":2.7899999618530273,"d1":2.573526930386246,"d3":-10.289387268064138,"w1":-28.09278660923319,"m1":-32.9326907646726,"vol_chg":-8.169900049899445,"vol_latest":1214600,"spark":[4.16,3.99,4.19,4.08,3.87,4.1,4.23,4.34,4.18,4.3,4.16,3.94,3.92,3.87,3.96,3.95,3.88,3.0,3.11,2.83,2.72,2.79]},{"ticker":"SATL","name":"Satellogic Inc.","currency":"USD","exchange":"NasdaqCM","price":3.490000009536743,"d1":5.438068576099394,"d3":-1.4124280467537491,"w1":-8.39894850521561,"m1":-38.98601158130795,"vol_chg":-21.89801445472735,"vol_latest":3698500,"spark":[5.72,5.54,5.43,5.18,4.82,4.73,4.61,4.54,4.33,4.31,3.96,3.57,3.82,3.57,3.9,3.755,3.81,3.59,3.54,3.53,3.31,3.49]},{"ticker":"SNDK","name":"Sandisk Corporation","currency":"USD","exchange":"NasdaqGS","price":1279.9599609375,"d1":25.993950376650517,"d3":0.1353418786277869,"w1":-20.515670957683408,"m1":-43.70659788399216,"vol_chg":57.46766821235768,"vol_latest":24010300,"spark":[2273.73,2032.22,1745.0,1744.4301,1617.7,1727.1801,1858.27,1915.92,1673.97,1757.8199,1615.0,1411.08,1354.8199,1390.95,1589.4,1599.27,1610.33,1436.5601,1278.23,1096.1,1015.89,1279.96]},{"ticker":"MOH","name":"Molina Healthcare Inc","currency":"USD","exchange":"NYSE","price":194.6999969482422,"d1":-2.170639750517041,"d3":-2.3962296378959547,"w1":-2.7909513831301584,"m1":-14.866637714776465,"vol_chg":-44.27709919449335,"vol_latest":908300,"spark":[228.7,232.55,229.87,227.7,232.9,230.94,232.09,233.31,242.88,241.56,233.36,224.82,225.37,229.71,226.54,221.74,200.29,197.55,199.48,200.34,199.02,194.7]},{"ticker":"HAL","name":"Halliburton Company","currency":"USD","exchange":"NYSE","price":31.639999389648438,"d1":1.4427664247695298,"d3":-1.5250596395188376,"w1":-3.2711700543340725,"m1":-6.804127603474644,"vol_chg":-32.82950840141199,"vol_latest":8230800,"spark":[33.95,33.01,32.96,33.0,33.79,34.97,34.12,34.39,35.21,35.42,35.25,35.04,35.22,35.11,33.19,33.03,32.71,33.36,32.13,31.23,31.19,31.64]},{"ticker":"PFE","name":"Pfizer, Inc.","currency":"USD","exchange":"NYSE","price":24.90999984741211,"d1":-0.9542734582840097,"d3":0.9728405771217901,"w1":1.342554616478204,"m1":5.256534723255399,"vol_chg":12.151739846588534,"vol_latest":44924600,"spark":[23.666,23.4694,23.9019,23.3122,23.6562,23.6365,23.8331,23.7544,24.0591,23.8331,24.3933,24.7078,24.6193,24.3245,24.5112,24.3933,24.58,24.54,24.67,25.25,25.15,24.91]},{"ticker":"EWZ","name":"iShares MSCI Brazil ETF","currency":"USD","exchange":"NYSEArca","price":36.529998779296875,"d1":2.9884339501377033,"d3":1.8399773266383816,"w1":0.99530171019099,"m1":5.884054432744565,"vol_chg":-0.5419277338684357,"vol_latest":17486400,"spark":[34.5,34.18,34.43,34.92,34.64,34.41,34.96,35.93,35.39,36.03,35.88,35.33,35.23,35.48,35.62,36.62,36.17,35.73,35.87,36.05,35.47,36.53]},{"ticker":"MELI","name":"MercadoLibre, Inc.","currency":"USD","exchange":"NasdaqGS","price":1885.72998046875,"d1":1.203230872478649,"d3":3.6263417075246975,"w1":4.838496228355034,"m1":11.095856826948602,"vol_chg":4.288773669972948,"vol_latest":370100,"spark":[1697.39,1742.1899,1763.36,1805.6801,1813.61,1809.38,1807.83,1852.22,1867.3,1873.88,1843.1899,1857.42,1813.91,1832.42,1822.65,1799.21,1798.7,1801.4399,1819.74,1862.52,1863.3101,1885.73]},{"ticker":"DUOL","name":"Duolingo, Inc.","currency":"USD","exchange":"NasdaqGS","price":133.60000610351562,"d1":-4.687159985199508,"d3":0.5872600032259206,"w1":10.715180352010545,"m1":16.153721094347862,"vol_chg":-22.638960528578096,"vol_latest":787400,"spark":[115.02,121.215,125.76,129.72,131.95,127.57,129.95,124.76,132.34,128.35,131.22,128.94,133.85,133.89,124.71,119.51,120.67,122.24,132.82,140.73,140.17,133.6]},{"ticker":"KLAR","name":"Klarna Group plc","currency":"USD","exchange":"NYSE","price":19.0,"d1":2.040811727386831,"d3":2.7582489734719675,"w1":8.077361106123337,"m1":-6.12648115188027,"vol_chg":-35.471674940609425,"vol_latest":2679600,"spark":[20.24,20.44,19.72,19.88,19.42,19.03,19.99,19.62,19.27,19.63,19.58,19.22,18.75,18.76,19.03,17.85,17.58,17.36,18.49,18.71,18.62,19.0]},{"ticker":"FIG","name":"Figma, Inc.","currency":"USD","exchange":"NYSE","price":23.760000228881836,"d1":-4.038772175912698,"d3":3.574540870680518,"w1":18.80000114440918,"m1":31.343283739457657,"vol_chg":-26.26810057806947,"vol_latest":16170600,"spark":[18.09,19.49,21.34,21.08,22.19,21.67,22.26,21.11,23.65,23.86,23.5,23.41,23.95,24.02,21.93,21.47,20.0,21.12,22.94,24.38,24.76,23.76]},{"ticker":"ASML","name":"ASML Holding N.V. - New York Re","currency":"USD","exchange":"NasdaqGS","price":1651.43994140625,"d1":6.4971079846325965,"d3":-0.10175466993384323,"w1":-8.287532223025025,"m1":-16.882350577601667,"vol_chg":3.7633020680951152,"vol_latest":2170500,"spark":[1986.8704,1840.6595,1767.0347,1822.7126,1745.0232,1766.3656,1801.9196,1794.9984,1723.8107,1773.3466,1812.9254,1782.5646,1745.3228,1736.7738,1799.1831,1799.5326,1800.6711,1754.8204,1653.1221,1582.95,1550.6899,1651.4399]},{"ticker":"TATE.L","name":"TATE & LYLE PLC ORD 29 1/6P","currency":"GBp","exchange":"LSE","price":555.5,"d1":0.18034265103697023,"d3":-0.08992805755395684,"w1":-0.17969451931716085,"m1":-0.08992805755395684,"vol_chg":-48.4428299839344,"vol_latest":1218199,"spark":[556.0,559.0,558.5,560.0,561.0,557.0,557.0,557.5,558.5,558.5,562.5,560.5,559.5,559.5,559.0,556.5,556.5,555.5,556.0,554.5,554.5,555.5]},{"ticker":"HAIN","name":"The Hain Celestial Group, Inc.","currency":"USD","exchange":"NasdaqGS","price":0.49000000953674316,"d1":0.0,"d3":-3.92156496088299,"w1":-9.259261098908716,"m1":-12.499998669539185,"vol_chg":-42.935129205887606,"vol_latest":447400,"spark":[0.56,0.57,0.53,0.57,0.59,0.56,0.56,0.57,0.56,0.6,0.59,0.58,0.56,0.53,0.59,0.57,0.54,0.53,0.51,0.5,0.49,0.49]},{"ticker":"XIACY","name":"Xiaomi Corp.","currency":"USD","exchange":"OTC Markets OTCPK","price":19.739999771118164,"d1":-2.1318805332141073,"d3":6.93391522279197,"w1":15.77712993799159,"m1":42.014390740000515,"vol_chg":46.466876152387876,"vol_latest":564000,"spark":[13.9,14.04,14.44,14.76,14.81,15.95,15.95,16.54,16.5,16.53,16.55,17.49,17.22,17.63,17.34,16.985,17.05,16.94,18.46,18.88,20.17,19.74]},{"ticker":"VWSYF","name":"Vestas Wind Systems A/S","currency":"USD","exchange":"OTC Markets OTCPK","price":26.600000381469727,"d1":5.3048303263899355,"d3":2.7423754675914274,"w1":-1.6272208548815286,"m1":-4.966057166898322,"vol_chg":-59.82142857142857,"vol_latest":3600,"spark":[27.99,27.93,29.02,28.7,27.28,26.44,27.36,26.5,27.14,27.59,27.15,27.47,27.0,27.39,27.09,26.82,27.04,26.64,25.89,25.24,25.26,26.6]},{"ticker":"ZETA","name":"Zeta Global Holdings Corp.","currency":"USD","exchange":"NYSE","price":21.3700008392334,"d1":-3.2155755748457686,"d3":3.0376136695649967,"w1":10.268326958937184,"m1":8.587400954527181,"vol_chg":-39.63952866716023,"vol_latest":4753200,"spark":[19.68,20.84,20.7,21.82,21.87,21.66,21.92,21.49,21.87,22.53,22.41,21.4,21.68,21.34,21.19,20.18,19.38,19.13,20.74,21.89,22.08,21.37]},{"ticker":"GYM.L","name":"THE GYM GROUP PLC ORD 0.01P","currency":"GBp","exchange":"LSE","price":204.0,"d1":0.9900990099009901,"d3":-0.4878048780487805,"w1":-2.857142857142857,"m1":-4.672897196261682,"vol_chg":-82.9840657256498,"vol_latest":25996,"spark":[214.0,215.0,210.0,215.0,208.0,210.0,208.0,207.0,206.0,202.0,201.0,199.0,201.0,203.0,200.0,207.0,210.0,206.0,205.0,201.0,202.0,204.0]},{"ticker":"GNC.L","name":"GREENCORE GROUP PLC ORD 1P (CDI","currency":"GBp","exchange":"LSE","price":259.20001220703125,"d1":-0.23093749581528572,"d3":1.5674041170150625,"w1":4.854375164616843,"m1":26.562504074536204,"vol_chg":-83.218057322224,"vol_latest":468944,"spark":[204.8,202.6,200.8,203.6,198.4,199.7,201.6,205.8,205.2,211.0,218.8,218.2,214.6,221.8,240.6,243.4,247.2,246.0,255.2,257.0,259.8,259.2]},{"ticker":"BYDDY","name":"BYD Co., Ltd.","currency":"USD","exchange":"OTC Markets OTCPK","price":11.989999771118164,"d1":1.1814294104779912,"d3":6.3886360613100015,"w1":8.506783386044336,"m1":29.341954466425936,"vol_chg":87.47178011062196,"vol_latest":2657300,"spark":[9.27,9.78,10.14,10.63,10.6,10.75,10.51,10.81,10.58,10.9,11.08,11.43,11.31,11.41,11.35,11.14,11.05,11.12,11.27,11.51,11.85,11.99]},{"ticker":"BYND","name":"Beyond Meat, Inc.","currency":"USD","exchange":"NasdaqGS","price":0.5559999942779541,"d1":4.708093277786147,"d3":1.4598570315101926,"w1":-0.714287158786028,"m1":-25.86666742960612,"vol_chg":-53.27462784101664,"vol_latest":12713100,"spark":[0.75,0.745,0.71,0.734,0.71,0.68,0.675,0.656,0.621,0.621,0.633,0.6,0.591,0.595,0.61,0.597,0.56,0.559,0.548,0.541,0.531,0.556]},{"ticker":"DKS","name":"Dick's Sporting Goods Inc","currency":"USD","exchange":"NYSE","price":199.91000366210938,"d1":-2.951600402407124,"d3":-2.767510832923538,"w1":-2.1775283494576283,"m1":-11.860144696459015,"vol_chg":47.220907111069025,"vol_latest":1554800,"spark":[226.81,229.76,236.18,229.02,223.13,215.21,217.32,217.98,216.1,211.37,208.89,216.88,217.36,214.32,208.41,210.13,204.36,206.04,205.6,211.37,205.99,199.91]},{"ticker":"OTLY","name":"Oatly Group AB","currency":"USD","exchange":"NasdaqGS","price":14.729999542236328,"d1":-3.4731368197649313,"d3":3.0069884319306963,"w1":17.277062500972846,"m1":57.54009562854071,"vol_chg":21.46069081385581,"vol_latest":245800,"spark":[9.35,9.51,9.95,10.05,9.65,9.49,9.58,9.85,10.0,9.755,9.84,10.0,10.04,9.88,9.05,10.78,12.56,13.37,14.3,15.16,15.26,14.73]},{"ticker":"SNOW","name":"Snowflake Inc.","currency":"USD","exchange":"NYSE","price":298.1000061035156,"d1":5.372927725333593,"d3":9.226143718642525,"w1":12.435409276017579,"m1":17.131633046568027,"vol_chg":38.24565021708634,"vol_latest":6435100,"spark":[254.5,261.19,260.15,262.09,262.74,261.31,267.49,261.45,268.65,275.94,271.87,270.02,268.9,274.34,271.73,267.8,265.13,268.06,272.92,270.36,282.9,298.1]},{"ticker":"SAP","name":"SAP  SE","currency":"USD","exchange":"NYSE","price":180.8800048828125,"d1":-2.7474597878536957,"d3":5.771598557405964,"w1":23.56879276484495,"m1":17.37071193721272,"vol_chg":22.489161338557935,"vol_latest":4112200,"spark":[154.11,159.15,162.59,160.49,162.77,157.42,158.46,157.86,159.97,154.81,155.91,161.64,159.04,158.35,154.34,148.75,146.38,160.0,171.01,179.17,185.99,180.88]},{"ticker":"WDAY","name":"Workday, Inc.","currency":"USD","exchange":"NasdaqGS","price":158.11000061035156,"d1":-5.892502958257979,"d3":7.164164162404241,"w1":23.649016355853522,"m1":29.153735480499176,"vol_chg":49.10080790633097,"vol_latest":6819200,"spark":[122.42,130.27,135.4,137.99,143.65,137.88,138.34,138.95,144.87,139.81,141.82,145.43,144.78,147.22,141.17,132.42,127.87,135.34,147.54,159.69,168.01,158.11]},{"ticker":"MKS.L","name":"MARKS AND SPENCER GROUP PLC ORD","currency":"GBp","exchange":"LSE","price":408.1000061035156,"d1":-0.3418788514003358,"d3":2.0250015258789062,"w1":7.253615270306341,"m1":5.698005607930934,"vol_chg":-90.18668595480142,"vol_latest":733341,"spark":[386.1,383.0,384.0,383.0,375.625,373.3,378.0,370.8,370.6,373.2,383.2,379.1,379.9,398.3,396.6,379.7,380.5,392.0,400.0,405.4,409.5,408.1]},{"ticker":"JD.L","name":"JD SPORTS FASHION PLC ORD 0.05P","currency":"GBp","exchange":"LSE","price":91.22000122070312,"d1":-2.250319846751527,"d3":-3.8980162448556643,"w1":2.5404700533826063,"m1":9.771363292035142,"vol_chg":-62.641292611148636,"vol_latest":4117790,"spark":[83.1,82.72,82.34,83.38,81.74,81.44,83.82,86.48,85.18,86.1,87.38,86.94,88.14,85.82,87.1,85.78,88.96,92.7,94.92,94.8,93.32,91.22]},{"ticker":"TRN.L","name":"TRAINLINE PLC ORD 1P","currency":"GBp","exchange":"LSE","price":241.8000030517578,"d1":-0.41186160932083243,"d3":0.08278019171758509,"w1":9.709623297596103,"m1":10.410960297606307,"vol_chg":-91.82642936293647,"vol_latest":105711,"spark":[219.0,218.0,219.2,220.2,217.6,221.6,224.0,229.4,223.8,223.0,226.2,224.4,224.0,223.6,218.6,213.8,220.4,231.6,241.6,240.0,242.8,241.8]},{"ticker":"NTPCGREEN.NS","name":"NTPC GREEN ENERGY LIMITED","currency":"INR","exchange":"NSE","price":90.02999877929688,"d1":-0.6401079650676289,"d3":-2.4276557334608455,"w1":-6.530316585814252,"m1":-6.6756529075529665,"vol_chg":-55.65326922024722,"vol_latest":4168867,"spark":[96.47,95.44,95.03,92.67,92.7,92.99,94.1,94.55,94.15,92.98,93.05,91.97,91.98,92.54,91.3,97.22,96.32,93.69,92.27,91.48,90.61,90.03]},{"ticker":"HMC","name":"Honda Motor Company, Ltd.","currency":"USD","exchange":"NYSE","price":30.719999313354492,"d1":0.13037486238865198,"d3":5.458291103315113,"w1":9.753481831226425,"m1":13.316114429095599,"vol_chg":-11.09840745018212,"vol_latest":1150800,"spark":[27.11,27.26,28.02,29.63,28.5,27.73,27.59,27.93,27.84,28.09,27.89,28.77,28.16,28.17,28.56,28.53,27.99,28.16,29.13,30.28,30.68,30.72]},{"ticker":"GSK.L","name":"GSK PLC ORD 31 1/4P","currency":"GBp","exchange":"LSE","price":1937.8330078125,"d1":-0.11170062822164947,"d3":-4.493198234967965,"w1":0.9550928790049491,"m1":-3.3017461171407185,"vol_chg":-86.51403139660462,"vol_latest":1139109,"spark":[2004.0,2015.0,1983.0,2003.0,1979.5,1959.5,1961.5,1953.5,1920.5,1916.5,1956.0,1916.5,1882.0,1893.0,1910.5,1905.5,1919.5,1961.0,2029.0,2007.0,1940.0,1937.833]},{"ticker":"TSM","name":"Taiwan Semiconductor Manufactur","currency":"USD","exchange":"NYSE","price":403.30999755859375,"d1":7.6440555967747335,"d3":1.0574059133094005,"w1":-2.9524975720981295,"m1":-15.549554751500638,"vol_chg":12.496498615295343,"vol_latest":17389900,"spark":[477.57,444.23,434.16,451.79,432.57,436.98,436.96,434.11,421.58,420.39,419.48,409.74,398.37,402.3,424.61,421.21,415.58,403.41,399.09,392.31,374.67,403.31]},{"ticker":"TIMEX.BO","name":"TIMEX GROUP INDIA LTD.","currency":"INR","exchange":"BSE","price":536.4500122070312,"d1":1.1788004255193254,"d3":-5.4046843058383445,"w1":-7.348875266488558,"m1":1.2074378948127198,"vol_chg":-54.33254567245076,"vol_latest":34275,"spark":[530.05,525.25,535.8,522.0,522.4,546.55,568.95,576.4,546.9,553.45,544.6,533.65,568.05,563.65,556.3,574.25,579.0,561.0,567.1,554.7,530.2,536.45]},{"ticker":"NVDA","name":"NVIDIA Corporation","currency":"USD","exchange":"NasdaqGS","price":195.0399932861328,"d1":2.647228527295132,"d3":-0.7480541762734559,"w1":-6.572141014428825,"m1":-2.5238658324676595,"vol_chg":-0.5703616315686802,"vol_latest":128444400,"spark":[200.09,197.58,194.83,195.55,196.93,204.12,202.78,210.96,203.53,211.8,212.5,207.4,202.81,203.28,207.29,212.06,208.76,206.84,196.51,197.01,190.01,195.04]},{"ticker":"BT-A.L","name":"BT GROUP PLC ORD 5P","currency":"GBp","exchange":"LSE","price":199.89999389648438,"d1":-2.0098069134880516,"d3":-2.201565623470109,"w1":3.5751263712354273,"m1":6.528111056991355,"vol_chg":-80.15070149781772,"vol_latest":2741747,"spark":[187.65,188.45,187.0,190.1,188.26,187.0,190.05,197.15,198.8,194.4,193.45,197.95,196.75,192.35,195.8,193.8,193.0,198.85,204.4,205.5,204.0,199.9]},{"ticker":"JDW.L","name":"WETHERSPOON ( J.D.) PLC ORD 2P","currency":"GBp","exchange":"LSE","price":772.0,"d1":-0.129366106080207,"d3":1.7127799736495388,"w1":7.670850767085077,"m1":7.446068197633959,"vol_chg":-84.7165714087174,"vol_latest":43988,"spark":[718.5,718.0,705.5,726.0,713.5,717.0,730.0,729.5,725.0,725.5,742.0,745.0,759.5,754.0,722.5,698.5,717.0,731.5,759.0,770.0,773.0,772.0]},{"ticker":"SBRY.L","name":"SAINSBURY (J) PLC ORD 28 4/7P","currency":"GBp","exchange":"LSE","price":366.3999938964844,"d1":3.0081476868843398,"d3":3.5320712674711845,"w1":6.202896781589674,"m1":8.659543485284683,"vol_chg":-32.11816556514857,"vol_latest":7056267,"spark":[337.2,335.0,331.4,337.2,338.5,337.8,341.5,343.9,347.2,348.5,353.6,356.3,357.3,353.5,351.2,344.3,345.0,349.2,353.9,358.4,355.7,366.4]},{"ticker":"ADTN","name":"ADTRAN Holdings, Inc.","currency":"USD","exchange":"NasdaqGS","price":8.420000076293945,"d1":1.0804340145521774,"d3":-11.368420249537419,"w1":-17.04433110596346,"m1":-39.42445822035037,"vol_chg":254.98354802477272,"vol_latest":6273500,"spark":[13.9,13.64,12.71,12.89,12.54,12.87,13.54,13.44,12.43,12.6,11.88,11.71,11.65,11.6,12.14,10.45,10.15,9.85,9.5,9.01,8.33,8.42]}],"failed":["0HAO.IL"],"catalysts":[{"ticker":"WDAY","headline":"Software sector rotation into AI names lifts Workday","detail":"WDAY jumped ~10% in one late-July session and rose ~5.2% on Jul 29 as investors rotated out of high-flying semiconductors into beaten-down software stocks amid renewed AI enthusiasm; no company-specific announcement drove the move.","category":"sector","date":"late Jul 2026","source":"247wallst.com / GuruFocus","url":"https://247wallst.com/investing/2026/07/27/salesforce-surges-7-servicenow-jumps-8-workday-jumps-10-as-software-rebounds-on-ai-rotation/"},{"ticker":"SAP","headline":"Q2 2026 earnings beat on accelerating cloud growth","detail":"SAP reported Q2 EPS of $2.15 (vs $2.00 est) and cloud revenue up 24% to $7.1B, with cloud backlog up 26% YoY to $26.06B; shares rallied ~7% on Jul 24 and added more as guidance was reaffirmed.","category":"earnings","date":"Jul 23-24 2026","source":"GuruFocus / Seeking Alpha","url":"https://www.gurufocus.com/news/8977973/sap-shares-surge-7-on-strong-q2-cloud-growth-amid-geopolitical-concerns"},{"ticker":"TE","headline":"Weak Q2 preview: net loss guidance and negative margins","detail":"T1 Energy's preliminary Q2 showed revenue of $245M-$255M but a net loss of $34M-$37M plus heavy cash burn (>$130M FCF outflow); shares fell ~12.8% on Jul 28, extending a steep monthly slide.","category":"guidance","date":"Jul 28 2026","source":"GuruFocus / Benzinga","url":"https://www.gurufocus.com/news/8983158/t1-energy-te-shares-drop-128-after-q2-preview-and-135m-solar-patent-acquisition"},{"ticker":"LODE","headline":"Q2 2026 earnings miss with widening losses","detail":"Comstock reported Q2 revenue of ~$1.38M (below ~$1.48M consensus) and EPS of -$0.12, with operating loss widening to $26.9M and net loss of $25.5M; shares fell sharply around the Jul 23 report.","category":"earnings","date":"Jul 23 2026","source":"Quiver Quantitative / GuruFocus","url":"https://www.quiverquant.com/news/Comstock+Inc.+(LODE)+Stock+Falls+on+Q2+2026+Earnings"},{"ticker":"SNDK","headline":"Memory-sector selloff and pre-earnings profit-taking","detail":"Sandisk unwound its huge 2026 run, down ~55% in July, as the AI-memory trade faded on fears memory price increases could slow and investors de-risked ahead of the Aug 5 earnings report; no fresh company-specific bad news.","category":"sector","date":"late Jul 2026","source":"Benzinga / Quiver Quantitative","url":"https://www.benzinga.com/markets/tech/26/07/60718731/sandisk-stock-extends-losses-as-ai-memory-trade-unravels"},{"ticker":"COHR","headline":"AI/optical sector selloff despite strong fundamentals","detail":"Coherent fell ~9-11% in late July amid a sector-wide selloff in optical/AI-connectivity names (triggered partly by Corning's earnings) as traders questioned AI capex durability, even though COHR posted record ~$1.8B revenue (+21%) and raised its outlook.","category":"sector","date":"Jul 28-29 2026","source":"247wallst.com / GuruFocus","url":"https://247wallst.com/investing/2026/07/28/coherent-sinks-11-applied-optoelectronics-falls-10-lumentum-drops-9-as-traders-question-ai-spending-spree/"},{"ticker":"AAOI","headline":"Profit-taking in optical/AI stocks after huge run-up","detail":"Applied Optoelectronics dropped ~13% on Jul 28 as part of a broad selloff in optical and AI-connectivity names, with traders reassessing AI infrastructure spending; the stock was vulnerable after a +342% one-year run, not a company-specific event.","category":"sector","date":"Jul 28 2026","source":"Benzinga / 247wallst.com","url":"https://247wallst.com/investing/2026/07/28/coherent-sinks-11-applied-optoelectronics-falls-10-lumentum-drops-9-as-traders-question-ai-spending-spree/"},{"ticker":"ADTN","headline":"Cut preliminary Q2 revenue and margin guidance","detail":"ADTRAN lowered preliminary Q2 revenue to $280M-$282M (below ~$293M consensus) and slashed non-GAAP operating margin outlook to 3.5%-4.0% from 5%-9%, citing a delayed major customer project and elevated component/freight costs; shares fell ~14-20% on volume up 255%.","category":"guidance","date":"Jul 21-22 2026","source":"Benzinga / Yahoo Finance","url":"https://www.benzinga.com/markets/guidance/26/07/60609192/adtran-shares-tumble-as-preliminary-results-miss-guidance-and-estimates"},{"ticker":"FIG","headline":"Short squeeze plus institutional buying off all-time lows","detail":"Figma jumped ~11.9% on Jul 13 in what looked like a short squeeze (42.4% of float sold short) after an SEC filing showed Citizens Financial Group bought over 162,000 shares; earlier July gains followed a bullish Citi initiation.","category":"other","date":"Jul 13 2026","source":"Motley Fool / StocksToTrade","url":"https://www.fool.com/investing/2026/07/13/why-figma-stock-jumped-119-today/"},{"ticker":"OTLY","headline":"Q2 earnings beat and raised 2026 revenue outlook","detail":"Oatly reported Q2 revenue of $240.1M (+15.2%), gross margin up to 33.9%, a narrower net loss and slightly positive adjusted EBITDA, and raised FY2026 constant-currency growth guidance to 8%-10% from 3%-5%; shares surged ~29% then added ~17% more.","category":"earnings","date":"Jul 22 2026","source":"Proactive Investors / Seeking Alpha","url":"https://www.proactiveinvestors.com/companies/news/1095879/oatly-shares-surge-after-company-raises-revenue-outlook-on-q2-growth-1095879.html"},{"ticker":"XIACY","headline":"New EV SUV launches and CXMT chipmaker debut","detail":"Xiaomi rose as much as 7.7% on Jul 27 (highest since June 3) on the unveiling of two new SUVs (SkyNomad N90 Max and N70 Max) and enthusiasm over Xiaomi-backed memory chipmaker CXMT, which soared over 500% on its trading debut.","category":"product","date":"Jul 27 2026","source":"GuruFocus / Seeking Alpha","url":"https://www.gurufocus.com/news/8979855/xiaomi-xiacy-shares-surge-on-new-suv-announcements-and-cxmt-debut"},{"ticker":"NBIS","headline":"Neocloud selloff and asset-light model concerns","detail":"Nebius fell ~14% (down ~28% over 30 days from its June peak) as the 'neocloud' AI-datacenter trade unwound; a new asset-light infrastructure model raised concerns about cost of capital vs returns, compounded by insider selling and sector pressure.","category":"sector","date":"mid-late Jul 2026","source":"FXLeaders / Yahoo Finance","url":"https://www.fxleaders.com/news/2026/07/17/nbis-stock-falls-14-as-neocloud-selloff-tests-nebius-groups-ai-backlog-bull-case/"},{"ticker":"SNOW","headline":"Wells Fargo price-target hike to $500 on AI momentum","detail":"Snowflake hit a new 52-week high (~$282.90) after Wells Fargo maintained Overweight and raised its target to $500 from $320, calling it a near-term AI beneficiary; strong uptake of AI products like Cortex Code (4,400+ customers) reinforced the rally.","category":"analyst","date":"late Jul 2026","source":"Benzinga / Seeking Alpha","url":"https://www.benzinga.com/trading-ideas/movers/26/07/60769174/snowflake-stock-rises-as-wells-fargo-lifts-target-to-500"},{"ticker":"AXTI","headline":"Semiconductor selloff and insider-selling momentum unwind","detail":"AXT fell ~12.7% (down ~50% over 30 days) in a sharp momentum unwind after running from ~$2 to a $143 high in late May; heavy insider selling by the CEO and directors, valuation concerns and a chip-sector pullback drove the drop ahead of Jul 30 earnings.","category":"sector","date":"mid-late Jul 2026","source":"Quiver Quantitative / Tickeron","url":"https://www.quiverquant.com/news/AXT+tumbles+as+chip+selloff+and+profit-taking+appear+to+pressure+shares"},{"ticker":"BYDDY","headline":"Record June exports and strategic moves fuel recovery","detail":"BYD rallied (~9% around Jul 2, up ~22% for the month) on record June overseas exports (+94.7% to 175,349 units) partly offsetting weak domestic sales, plus strategic hires including former Hungarian FM Peter Szijjarto joining Jul 15 to lead external relations.","category":"sector","date":"Jul 2026","source":"AOL / Motley Fool","url":"https://www.fool.com/investing/2026/07/02/byd-achieved-a-new-record-and-its-about-to-go-on-t/"},{"ticker":"BE","headline":"Q2 earnings blowout, raised guidance, and Mizuho upgrade","detail":"Bloom Energy reported Jul 28 Q2 EPS of $0.78 (vs $0.39 est) on revenue of $1.07B (vs ~$826M est) and raised 2026 guidance to $3.9B-$4.2B revenue; shares jumped ~27% on Jul 30 after Mizuho upgraded to Buy on AI power-demand deals, driving volume ~120% above average.","category":"earnings","date":"Jul 28-30 2026","source":"TimothySykes / TheMarketsDaily","url":"https://www.timothysykes.com/news/bloom-energy-corporation-be-news-2026_07_30-3/"}],"generated":"Jul 31, 2026 \u00b7 10:13 UTC","total":66}</script>
+<script>
+const D = JSON.parse(document.getElementById('payload').textContent);
+const $ = s => document.querySelector(s);
+const fmtPc = v => v==null? '—' : (v>=0?'+':'')+v.toFixed(2)+'%';
+const fmtPr = v => v==null? '—' : v>=1000? v.toLocaleString(undefined,{maximumFractionDigits:0}) : v.toFixed(2);
+const cls = v => v==null?'f':v>0?'u':v<0?'d':'f';
+const arrow = v => v==null?'':v>0?'▲':v<0?'▼':'';
+
+document.getElementById('mstamp').textContent = D.generated;
+document.getElementById('mstat').textContent = D.rows.length+' of '+D.total+' tickers live';
+
+/* ---- sparkline ---- */
+function spark(vals,w=88,h=26){
+  if(!vals||vals.length<2) return '';
+  const mn=Math.min(...vals),mx=Math.max(...vals),rng=(mx-mn)||1,p=2;
+  const up=vals[vals.length-1]>=vals[0];
+  const col=up?'var(--up)':'var(--down)';
+  const pts=vals.map((v,i)=>[p+i/(vals.length-1)*(w-2*p), h-p-((v-mn)/rng)*(h-2*p)]);
+  const line=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+  const area=line+` L${(w-p).toFixed(1)} ${h-p} L${p} ${h-p} Z`;
+  const id='g'+Math.floor(vals[0]*1000%9999)+vals.length;
+  const e=pts[pts.length-1];
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <defs><linearGradient id="${id}" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="${col}" stop-opacity=".22"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#${id})"/><path d="${line}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${e[0].toFixed(1)}" cy="${e[1].toFixed(1)}" r="2.3" fill="${col}"/></svg>`;
+}
+
+/* ---- KPIs ---- */
+(function(){
+  const r=D.rows, w=r.map(x=>x.w1).filter(v=>v!=null);
+  const g=r.filter(x=>x.w1>0).length, l=r.filter(x=>x.w1<0).length;
+  const avg=w.reduce((a,b)=>a+b,0)/w.length;
+  const best=r.filter(x=>x.w1!=null).reduce((a,b)=>b.w1>a.w1?b:a);
+  const worst=r.filter(x=>x.w1!=null).reduce((a,b)=>b.w1<a.w1?b:a);
+  const vspike=r.filter(x=>x.vol_chg!=null&&x.vol_chg>50).length;
+  const k=[
+    {lab:'Median breadth (1W)',val:`${g}<small> up</small> / ${l}<small> dn</small>`,tag:'Gainers vs losers',c:g>=l?'up':'down'},
+    {lab:'Avg 1-week move',val:fmtPc(avg),tag:'Across the list',c:avg>=0?'up':'down'},
+    {lab:'Top gainer (1W)',val:best.ticker,tag:fmtPc(best.w1),c:'up'},
+    {lab:'Top decliner (1W)',val:worst.ticker,tag:fmtPc(worst.w1),c:'down'},
+    {lab:'Volume spikes',val:`${vspike}`,tag:'>50% vs 20-day avg',c:''},
+  ];
+  $('#kpis').innerHTML=k.map(x=>`<div class="kpi ${x.c}"><div class="lab">${x.lab}</div>
+    <div class="val">${x.val}</div><div class="tag ${x.c?x.c+'-ink':''}">${x.tag}</div></div>`).join('');
+})();
+
+/* ---- movers ---- */
+(function(){
+  const r=D.rows.filter(x=>x.w1!=null);
+  const gain=[...r].sort((a,b)=>b.w1-a.w1).slice(0,6);
+  const lose=[...r].sort((a,b)=>a.w1-b.w1).slice(0,6);
+  const row=x=>`<div class="mrow"><span class="tk">${x.ticker}</span>
+    <span class="nm">${x.name||''}</span>${spark(x.spark)}
+    <span class="pc ${cls(x.w1)==='u'?'up-ink':'down-ink'}">${arrow(x.w1)} ${fmtPc(x.w1)}</span></div>`;
+  $('#movers').innerHTML=
+    `<div class="mcol"><h3>▲ Leaders</h3>${gain.map(row).join('')}</div>
+     <div class="mcol"><h3>▼ Laggards</h3>${lose.map(row).join('')}</div>`;
+})();
+
+/* ---- table ---- */
+let sortK='d3', sortDir=-1, filt='all', query='';
+const tb=$('#tbody');
+function render(){
+  let r=D.rows.filter(x=>{
+    if(query){const q=query.toLowerCase();
+      if(!(x.ticker.toLowerCase().includes(q)||(x.name||'').toLowerCase().includes(q)))return false;}
+    if(filt==='up')return x.w1>0;
+    if(filt==='down')return x.w1<0;
+    if(filt==='vol')return x.vol_chg!=null&&x.vol_chg>50;
+    return true;
+  });
+  r.sort((a,b)=>{
+    let x=a[sortK],y=b[sortK];
+    if(sortK==='ticker')return sortDir*x.localeCompare(y);
+    x=x==null?-1e9:x; y=y==null?-1e9:y; return sortDir*(x-y);
+  });
+  tb.innerHTML=r.map(x=>{
+    const vhi=x.vol_chg!=null&&x.vol_chg>50?' hi':'';
+    const pill=(v)=>`<span class="pill ${cls(v)}">${v==null?'—':(v>0?'+':'')+v.toFixed(1)+'%'}</span>`;
+    return `<tr><td><div class="tkcell"><b>${x.ticker}</b><span>${x.name||''}</span></div></td>
+      <td class="price">${fmtPr(x.price)}</td>
+      <td>${pill(x.d3)}</td><td>${pill(x.w1)}</td><td>${pill(x.m1)}</td>
+      <td class="vol${vhi}">${x.vol_chg==null?'—':(x.vol_chg>0?'+':'')+Math.round(x.vol_chg)+'%'}</td>
+      <td>${spark(x.spark,96,26)}</td></tr>`;
+  }).join('')|| '<tr><td colspan="7" style="text-align:center;padding:26px;color:var(--ink-3)">No matches</td></tr>';
+  document.querySelectorAll('thead th').forEach(th=>{
+    th.classList.toggle('act',th.dataset.k===sortK);
+    const ar=th.querySelector('.ar'); if(ar&&th.dataset.k===sortK)ar.textContent=sortDir<0?'▼':'▲';
+    else if(ar)ar.textContent='';
+  });
+}
+document.querySelectorAll('thead th.sortable').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k;
+  if(k===sortK)sortDir*=-1; else{sortK=k;sortDir=k==='ticker'?1:-1;}
+  render();
+}));
+$('#q').addEventListener('input',e=>{query=e.target.value;render();});
+document.querySelectorAll('#filt button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#filt button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filt=b.dataset.f; render();
+}));
+render();
+
+/* ---- catalysts ---- */
+(function(){
+  const byT={}; D.rows.forEach(x=>byT[x.ticker]=x);
+  const html=D.catalysts.map(c=>{
+    const m=byT[c.ticker]; const w1=m?m.w1:null;
+    const good=w1!=null&&w1>=0;
+    return `<div class="card ${good?'g':'b'}">
+      <div class="ch"><span class="ct">${c.ticker}</span>
+        <span class="cm ${good?'up-ink':'down-ink'}">${arrow(w1)} ${fmtPc(w1)} <span style="color:var(--ink-3);font-weight:600">1W</span></span>
+        <span class="chip">${c.category}</span></div>
+      <h4>${c.headline}</h4>
+      <p>${c.detail}</p>
+      <div class="src"><span>${c.source} · ${c.date}</span>${c.url?`<a href="${c.url}" target="_blank" rel="noopener">Read →</a>`:''}</div>
+    </div>`;
+  }).join('');
+  $('#cats').innerHTML=html;
+})();
+
+if(D.failed&&D.failed.length)
+  $('#failnote').innerHTML='<span style="color:var(--ink-3)">Unresolved: '+D.failed.join(', ')+'</span>';
+</script>
+
+</body>
+</html>
