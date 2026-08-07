@@ -1,0 +1,269 @@
+<style>
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --surface-2:#eef0f4; --line:#dfe3ea;
+    --ink:#141922; --ink-2:#454e5c; --ink-3:#8a93a3;
+    --pos:#1f9d63; --neg:#d4353b; --pos-ink:#0a3d24; --neg-ink:#5a1114;
+    --amber:#b57e12; --amber-bg:rgba(224,165,43,.12);
+    --tag-earn:#2f6fed; --tag-analyst:#8a5cf6; --tag-deal:#0e9aa7;
+    --tag-sector:#c25e00; --tag-mom:#6b7280;
+    --shadow:0 1px 2px rgba(20,25,34,.05),0 6px 20px rgba(20,25,34,.06);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#0f1419; --surface:#171d26; --surface-2:#1e2530; --line:#28313d;
+    --ink:#eef2f7; --ink-2:#a9b3c1; --ink-3:#6b7686;
+    --pos:#3ecf8e; --neg:#f0616b; --pos-ink:#c9f5e0; --neg-ink:#ffd9dc;
+    --amber:#e0a52b; --amber-bg:rgba(224,165,43,.11);
+    --tag-earn:#6ea0ff; --tag-analyst:#b79bff; --tag-deal:#3fc7d4;
+    --tag-sector:#f0954a; --tag-mom:#9aa5b4;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.35);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1419; --surface:#171d26; --surface-2:#1e2530; --line:#28313d;
+    --ink:#eef2f7; --ink-2:#a9b3c1; --ink-3:#6b7686;
+    --pos:#3ecf8e; --neg:#f0616b; --pos-ink:#c9f5e0; --neg-ink:#ffd9dc;
+    --amber:#e0a52b; --amber-bg:rgba(224,165,43,.11);
+    --tag-earn:#6ea0ff; --tag-analyst:#b79bff; --tag-deal:#3fc7d4;
+    --tag-sector:#f0954a; --tag-mom:#9aa5b4;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;-webkit-font-smoothing:antialiased;margin:0}
+  .wrap{max-width:1080px;margin:0 auto;padding:clamp(18px,3vw,40px)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .up{color:var(--pos)} .down{color:var(--neg)} .flat{color:var(--ink-3)}
+  .dim{color:var(--ink-3)}
+
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    margin-bottom:22px}
+  h1{font-size:clamp(1.5rem,3.2vw,2.1rem);font-weight:700;margin:0;letter-spacing:-.02em;
+    text-wrap:balance}
+  .sub{margin:4px 0 0;color:var(--ink-2);font-size:.9rem}
+  .theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--ink-2);
+    width:38px;height:38px;border-radius:10px;font-size:1.05rem;cursor:pointer;
+    flex:none;transition:.15s}
+  .theme-btn:hover{color:var(--ink);border-color:var(--ink-3)}
+  .theme-btn:focus-visible{outline:2px solid var(--tag-earn);outline-offset:2px}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+    margin-bottom:26px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;box-shadow:var(--shadow)}
+  .kpi-l{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);
+    font-weight:600}
+  .kpi-v{font-size:1.5rem;font-weight:700;margin-top:5px;font-family:var(--mono);
+    font-variant-numeric:tabular-nums}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);margin-bottom:26px;overflow:hidden}
+  .panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .panel-head h2{font-size:1.02rem;margin:0;font-weight:650;letter-spacing:-.01em}
+  .hint{font-size:.75rem;color:var(--ink-3)}
+  .controls{display:flex;align-items:center;gap:12px}
+  #filter{background:var(--surface-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:6px 10px;font-size:.82rem;font-family:var(--mono);width:130px}
+  #filter:focus-visible{outline:2px solid var(--tag-earn);outline-offset:1px}
+
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  thead th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-2);
+    font-weight:600;text-align:left;padding:9px 14px;font-size:.72rem;
+    text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;
+    border-bottom:1px solid var(--line)}
+  th.r{text-align:right} td.r{text-align:right}
+  th.sortable,th.txt{cursor:pointer;user-select:none}
+  th.sortable:hover,th.txt:hover{color:var(--ink)}
+  th.sorted-asc::after{content:" ▲";font-size:.65em;color:var(--tag-earn)}
+  th.sorted-desc::after{content:" ▼";font-size:.65em;color:var(--tag-earn)}
+  tbody td{padding:7px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
+  td.tk{font-weight:600}
+  td.name{color:var(--ink-2);max-width:230px;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;font-size:.82rem}
+  .cur{color:var(--ink-3);font-size:.68rem;margin-left:4px}
+  .failed{margin:0;padding:10px 18px;font-size:.74rem;color:var(--ink-3);
+    background:var(--surface-2)}
+  .failed .mono{color:var(--ink-2)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;
+    padding:18px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 15px;position:relative}
+  .card.reg{border-color:color-mix(in srgb,var(--amber) 55%,var(--line));
+    background:linear-gradient(0deg,var(--amber-bg),transparent)}
+  .card-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .tk{font-weight:700;font-size:.95rem}
+  .tag{font-size:.66rem;font-weight:650;text-transform:uppercase;letter-spacing:.04em;
+    padding:2px 8px;border-radius:99px;color:#fff}
+  .tag[data-tag="Earnings"]{background:var(--tag-earn)}
+  .tag[data-tag="Regulatory"]{background:var(--amber)}
+  .tag[data-tag="Analyst"]{background:var(--tag-analyst)}
+  .tag[data-tag="Deal"]{background:var(--tag-deal)}
+  .tag[data-tag="Sector"]{background:var(--tag-sector)}
+  .tag[data-tag="Momentum"]{background:var(--tag-mom)}
+  .reg-tag{background:transparent;color:var(--amber);
+    border:1px solid color-mix(in srgb,var(--amber) 60%,transparent)}
+  .card-move{margin-left:auto;font-weight:700;font-size:.9rem}
+  .card-move em{font-style:normal;color:var(--ink-3);font-size:.65rem;font-weight:600}
+  .card-name{margin:8px 0 6px;color:var(--ink-2);font-size:.78rem;font-weight:600}
+  .card-text{margin:0;color:var(--ink-2);font-size:.83rem;line-height:1.5}
+
+  .foot{color:var(--ink-3);font-size:.74rem;line-height:1.6;text-align:center;
+    max-width:680px;margin:0 auto;padding:4px 0 8px}
+  @media (max-width:560px){
+    .head{flex-direction:row} .card-move{margin-left:0}
+    td.name{max-width:120px}
+  }
+</style>
+
+<div class="wrap">
+<header class="head">
+  <div>
+    <h1>Watchlist Pulse</h1>
+    <p class="sub">Momentum &amp; catalysts across 65 tickers · generated Aug 07, 2026 · 10:16 UTC</p>
+  </div>
+  <button id="theme" class="theme-btn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+</header>
+
+<section class="kpis"><div class="kpi"><div class="kpi-l">Tickers loaded</div><div class="kpi-v">65<span class="dim">/66</span></div></div><div class="kpi"><div class="kpi-l">Gainers · 1W</div><div class="kpi-v"><span class="up">44</span></div></div><div class="kpi"><div class="kpi-l">Losers · 1W</div><div class="kpi-v"><span class="down">20</span></div></div><div class="kpi"><div class="kpi-l">Top mover · 1W</div><div class="kpi-v"><span class="mono up">AXTI +60.1%</span></div></div><div class="kpi"><div class="kpi-l">Worst mover · 1W</div><div class="kpi-v"><span class="mono down">XIACY -12.9%</span></div></div></section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Movement</h2>
+    <div class="controls">
+      <input id="filter" type="text" placeholder="Filter ticker…" aria-label="Filter ticker" />
+      <span class="hint">click a column to sort</span>
+    </div>
+  </div>
+  <div class="table-scroll">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th data-k="ticker" class="txt">Ticker</th>
+          <th data-k="name" class="txt">Name</th>
+          <th data-k="price" class="r">Price</th>
+          <th data-k="d3" class="r sortable">3-Day</th>
+          <th data-k="w1" class="r sortable sorted-desc">1-Week</th>
+          <th data-k="m1" class="r sortable">1-Month</th>
+          <th data-k="vol" class="r sortable">Vol &Delta;</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <p class="failed">No data resolved for: <span class="mono">0HAO.IL</span></p>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>What moved them</h2>
+    <span class="hint">curated catalysts for the notable movers</span></div>
+  <div id="cards" class="cards"></div>
+</section>
+
+<footer class="foot">
+  Informational only — not investment advice. Prices from Yahoo Finance public
+  data and may be delayed; % windows use trading-day look-backs (3 / 5 / 21 sessions).
+  Volume &Delta; compares the latest session to its trailing 20-day average.
+</footer>
+</div>
+
+<script>
+const DATA = [{"ticker": "VENU", "name": "Venu Holding Corporation", "price": 2.0, "currency": "USD", "d3": -12.280700653653822, "w1": -10.714286094417377, "m1": -17.695475512106906, "vol": 23.97302559718858}, {"ticker": "DUKR", "name": "DUKE Robotics Corp.", "price": 5.65, "currency": "USD", "d3": 6.603771547865541, "w1": 10.029208247917424, "m1": 2.914395827318584, "vol": 63.32819722650231}, {"ticker": "LNZA", "name": "LanzaTech Global, Inc.", "price": 6.13, "currency": "USD", "d3": 5.689653669894854, "w1": 14.365670928102123, "m1": 3.025215310015488, "vol": 95.60117302052787}, {"ticker": "SIDU", "name": "Sidus Space, Inc.", "price": 2.09, "currency": "USD", "d3": 5.025120811725402, "w1": 13.586949796498732, "m1": -7.111114925808376, "vol": -3.047229973571157}, {"ticker": "STLTECH.NS", "name": "STERLITE TECHNOLOGIES LTD", "price": 638.9, "currency": "INR", "d3": 5.699398049682182, "w1": 14.693481449552396, "m1": 15.252106530492258, "vol": -32.226443627172245}, {"ticker": "HFCL.NS", "name": "HFCL LIMITED", "price": 207.98, "currency": "INR", "d3": 2.564353969595294, "w1": 7.250411350738833, "m1": -3.1209228511390927, "vol": -27.214344695328695}, {"ticker": "TEJASNET.NS", "name": "TEJAS NETWORKS LIMITED", "price": 513.45, "currency": "INR", "d3": -3.839310709117734, "w1": 0.0877216777838694, "m1": -5.328655790513064, "vol": -64.34508038634925}, {"ticker": "HLIT", "name": "Harmonic Inc.", "price": 11.68, "currency": "USD", "d3": -1.016948166266164, "w1": 4.099821989298278, "m1": -14.930803389718433, "vol": -35.67759313501818}, {"ticker": "NBIS", "name": "Nebius Group N.V.", "price": 189.88, "currency": "USD", "d3": -10.678331335363675, "w1": 0.7695230395334081, "m1": -12.28750525208122, "vol": 19.083699658057053}, {"ticker": "PENG", "name": "Penguin Solutions, Inc.", "price": 56.26, "currency": "USD", "d3": 6.958174816702341, "w1": 9.391401881581057, "m1": -28.303813627710444, "vol": -71.94045612797046}, {"ticker": "NOK", "name": "Nokia Corporation Sponsored", "price": 9.43, "currency": "USD", "d3": 0.7478702036981169, "w1": 3.7403756532511587, "m1": -21.08786229549172, "vol": -53.4714337336336}, {"ticker": "SLOIF", "name": "Soitec, Bernin", "price": 130.34, "currency": "USD", "d3": 2.9704490855153978, "w1": 10.457624015161548, "m1": 12.294302300840561, "vol": -9.385113268608414}, {"ticker": "TE", "name": "T1 Energy Inc.", "price": 5.55, "currency": "USD", "d3": 12.348180697342483, "w1": 29.976585843698583, "m1": -24.48979234357811, "vol": 42.608313635469614}, {"ticker": "FLNC", "name": "Fluence Energy, Inc.", "price": 13.21, "currency": "USD", "d3": -9.271980374745525, "w1": -1.9302169541766934, "m1": -13.885267883009652, "vol": 267.6799541523016}, {"ticker": "MITK", "name": "Mitek Systems, Inc.", "price": 16.81, "currency": "USD", "d3": -1.0594485438532462, "w1": -1.5231413797896576, "m1": -8.987546882104473, "vol": -15.714778811498109}, {"ticker": "HUMA", "name": "Humacyte, Inc.", "price": 0.71, "currency": "USD", "d3": 3.0478908174417896, "w1": 5.654760136093726, "m1": -3.13779024840338, "vol": -63.6761801378021}, {"ticker": "AAOI", "name": "Applied Optoelectronics, Inc.", "price": 124.22, "currency": "USD", "d3": 12.712097135117679, "w1": 37.853734745656084, "m1": 8.545961701026942, "vol": 54.34701917588002}, {"ticker": "BE", "name": "Bloom Energy Corporation", "price": 228.96, "currency": "USD", "d3": 4.873579622891538, "w1": 10.544617666837388, "m1": -9.961063054401734, "vol": -33.446598201660564}, {"ticker": "SWMR", "name": "Swarmer, Inc", "price": 34.6, "currency": "USD", "d3": -7.560784953195306, "w1": -9.66057659698121, "m1": -16.60641823478546, "vol": -33.93228451488878}, {"ticker": "AMPX", "name": "Amprius Technologies, Inc.", "price": 11.19, "currency": "USD", "d3": 10.57311963363828, "w1": 18.162611033316665, "m1": -3.367878634648026, "vol": 54.90303533276237}, {"ticker": "KRKNF", "name": "Kraken Robotics Inc.", "price": 4.34, "currency": "USD", "d3": 3.952094714131854, "w1": 5.46781030339128, "m1": 1.1655056218990303, "vol": -43.15623534987713}, {"ticker": "AXTI", "name": "AXT Inc", "price": 75.17, "currency": "USD", "d3": 9.46556017667043, "w1": 60.1406058119767, "m1": 25.033265975456874, "vol": 3.317419960055956}, {"ticker": "COHR", "name": "Coherent Corp.", "price": 334.22, "currency": "USD", "d3": 15.992220528095785, "w1": 34.19256584633776, "m1": 5.415554041574752, "vol": 20.341465313876743}, {"ticker": "VYX", "name": "NCR Voyix Corporation", "price": 8.38, "currency": "USD", "d3": -3.0092617887772626, "w1": 2.69608175419979, "m1": 4.881105813450795, "vol": 60.48615161151887}, {"ticker": "NATL", "name": "NCR Atleos Corporation", "price": 46.54, "currency": "USD", "d3": -0.15018170758974975, "w1": -0.7464245653165019, "m1": 3.9071220456111395, "vol": 5.125077285563892}, {"ticker": "FLTR.L", "name": "FLUTTER ENTERTAINMENT PLC ORD E", "price": 7588.0, "currency": "GBp", "d3": -8.068815119941847, "w1": -0.13161358252171623, "m1": -2.6929982046678633, "vol": 71.75008379258999}, {"ticker": "LODE", "name": "Comstock Inc.", "price": 3.09, "currency": "USD", "d3": 2.3178785988376855, "w1": 10.75268660996805, "m1": -24.634146681858777, "vol": -38.18868979959194}, {"ticker": "SATL", "name": "Satellogic Inc.", "price": 5.04, "currency": "USD", "d3": 27.433629812317857, "w1": 44.412605962199656, "m1": 6.553909968910822, "vol": 139.1408029188377}, {"ticker": "SNDK", "name": "Sandisk Corporation", "price": 1258.58, "currency": "USD", "d3": -2.2864430620661893, "w1": -1.6703651313555798, "m1": -27.130934997161294, "vol": 14.763925972115555}, {"ticker": "MOH", "name": "Molina Healthcare Inc", "price": 191.88, "currency": "USD", "d3": -1.4838010608685201, "w1": -1.4483780737702507, "m1": -16.913482785860797, "vol": -58.25224871162611}, {"ticker": "HAL", "name": "Halliburton Company", "price": 32.51, "currency": "USD", "d3": 1.9441798173443006, "w1": 2.7496806215786482, "m1": -7.034609131536255, "vol": 5.358062959623711}, {"ticker": "PFE", "name": "Pfizer, Inc.", "price": 26.2, "currency": "USD", "d3": 4.67439090770056, "w1": 5.178646822277526, "m1": 8.939715567914858, "vol": 27.69081246769696}, {"ticker": "EWZ", "name": "iShares MSCI Brazil ETF", "price": 35.81, "currency": "USD", "d3": -1.6748951848504767, "w1": -1.9709757187670998, "m1": 4.068589166193202, "vol": 7.595537039819844}, {"ticker": "MELI", "name": "MercadoLibre, Inc.", "price": 1830.0, "currency": "USD", "d3": -3.6228354713965154, "w1": -2.955353154797739, "m1": 1.1396166124054736, "vol": 216.13177245095696}, {"ticker": "DUOL", "name": "Duolingo, Inc.", "price": 122.58, "currency": "USD", "d3": -9.73490495111738, "w1": -8.248505815128816, "m1": -3.9115762920018144, "vol": 261.69790080127143}, {"ticker": "KLAR", "name": "Klarna Group plc", "price": 20.26, "currency": "USD", "d3": 2.323237421950424, "w1": 6.631580152009662, "m1": 6.463476079112769, "vol": -36.07476199909111}, {"ticker": "FIG", "name": "Figma, Inc.", "price": 23.97, "currency": "USD", "d3": -3.81220208680166, "w1": 0.8838345220947794, "m1": 10.613748172417626, "vol": 125.75157449060599}, {"ticker": "ASML", "name": "ASML Holding N.V. - New York Re", "price": 1704.37, "currency": "USD", "d3": 3.7655538349900013, "w1": 3.2050849918202893, "m1": -3.6344120323165905, "vol": -45.42639922190481}, {"ticker": "TATE.L", "name": "TATE & LYLE PLC ORD 29 1/6P", "price": 554.0, "currency": "GBp", "d3": 0.27149321266968324, "w1": 0.0, "m1": -0.5385996409335727, "vol": -71.22275729965038}, {"ticker": "HAIN", "name": "The Hain Celestial Group, Inc.", "price": 0.59, "currency": "USD", "d3": 17.99999475479126, "w1": 20.40815556957954, "m1": 5.357137725365427, "vol": 26.317079147267826}, {"ticker": "XIACY", "name": "Xiaomi Corp.", "price": 17.19, "currency": "USD", "d3": -3.263927455064606, "w1": -12.917929415538707, "m1": 7.774299307967271, "vol": -51.57309867298444}, {"ticker": "VWSYF", "name": "Vestas Wind Systems A/S", "price": 27.07, "currency": "USD", "d3": 4.035354414251192, "w1": 1.7669146865197278, "m1": 2.382750181699481, "vol": -59.183673469387756}, {"ticker": "ZETA", "name": "Zeta Global Holdings Corp.", "price": 25.56, "currency": "USD", "d3": 13.29787265522297, "w1": 19.606918400379865, "m1": 18.005538531876937, "vol": 67.40777800301045}, {"ticker": "GYM.L", "name": "THE GYM GROUP PLC ORD 0.01P", "price": 206.0, "currency": "GBp", "d3": 0.9803921568627451, "w1": 1.477832512315271, "m1": -1.9047619047619049, "vol": -96.8128835031194}, {"ticker": "GNC.L", "name": "GREENCORE GROUP PLC ORD 1P (CDI", "price": 260.2, "currency": "GBp", "d3": -0.6870182415911259, "w1": -0.07679788561462979, "m1": 30.295451268569284, "vol": -94.80331602526714}, {"ticker": "BYDDY", "name": "BYD Co., Ltd.", "price": 11.48, "currency": "USD", "d3": -4.7302957632880664, "w1": -4.253546610654141, "m1": 6.79069341615189, "vol": -20.969907712846464}, {"ticker": "BYND", "name": "Beyond Meat, Inc.", "price": 0.528, "currency": "USD", "d3": -13.725489050275936, "w1": -5.035970760276549, "m1": -22.35294241393725, "vol": 169.614340611675}, {"ticker": "DKS", "name": "Dick's Sporting Goods Inc", "price": 198.62, "currency": "USD", "d3": -1.095514454134735, "w1": -0.6452946432346953, "m1": -7.708754741473041, "vol": 1.0288737641375962}, {"ticker": "OTLY", "name": "Oatly Group AB", "price": 13.69, "currency": "USD", "d3": -8.611481984467712, "w1": -7.060420870149825, "m1": 44.25711180781482, "vol": -22.426838637580612}, {"ticker": "SNOW", "name": "Snowflake Inc.", "price": 318.0, "currency": "USD", "d3": 3.4045463084130096, "w1": 6.675610026513745, "m1": 21.69454019021779, "vol": 21.87640587297043}, {"ticker": "SAP", "name": "SAP  SE", "price": 199.46, "currency": "USD", "d3": 5.172693452728165, "w1": 10.272004273270666, "m1": 26.7056339943569, "vol": -13.621665034556123}, {"ticker": "WDAY", "name": "Workday, Inc.", "price": 170.24, "currency": "USD", "d3": 3.144503087212137, "w1": 7.671877070385857, "m1": 23.4696833945249, "vol": -20.601722576611493}, {"ticker": "MKS.L", "name": "MARKS AND SPENCER GROUP PLC ORD", "price": 405.75, "currency": "GBp", "d3": -1.0607183708301666, "w1": 0.16045269975095516, "m1": 8.69274397754011, "vol": -85.35918783631453}, {"ticker": "JD.L", "name": "JD SPORTS FASHION PLC ORD 0.05P", "price": 95.09, "currency": "GBp", "d3": 4.128336241420377, "w1": 6.293312442471456, "m1": 16.76079750403391, "vol": -75.32120076879484}, {"ticker": "TRN.L", "name": "TRAINLINE PLC ORD 1P", "price": 248.6, "currency": "GBp", "d3": 0.3228422283718521, "w1": 4.806074747868127, "m1": 12.184115187879344, "vol": -22.737683123257188}, {"ticker": "NTPCGREEN.NS", "name": "NTPC GREEN ENERGY LIMITED", "price": 91.5, "currency": "INR", "d3": 0.8597870026470769, "w1": 1.6327904483334987, "m1": -1.602320569952459, "vol": -79.46772161712904}, {"ticker": "HMC", "name": "Honda Motor Company, Ltd.", "price": 30.73, "currency": "USD", "d3": 3.81756468312077, "w1": 0.03255282911900546, "m1": 10.818608184362272, "vol": 9.758517153350645}, {"ticker": "GSK.L", "name": "GSK PLC ORD 31 1/4P", "price": 1969.5, "currency": "GBp", "d3": 2.8728127448419953, "w1": 1.967382863059798, "m1": 0.5103342689461597, "vol": -87.48550568211708}, {"ticker": "TSM", "name": "Taiwan Semiconductor Manufactur", "price": 418.2, "currency": "USD", "d3": 2.9770326491732577, "w1": 3.6919527754266115, "m1": -4.29767914026723, "vol": -29.71241351311435}, {"ticker": "TIMEX.BO", "name": "TIMEX GROUP INDIA LTD.", "price": 550.5, "currency": "INR", "d3": -1.1314633496923194, "w1": 3.341465625131405, "m1": 0.7227174632245168, "vol": 19.649136051241708}, {"ticker": "NVDA", "name": "NVIDIA Corporation", "price": 218.99, "currency": "USD", "d3": 5.976580594267218, "w1": 12.279539085040604, "m1": 7.284935690616458, "vol": -12.72789355422267}, {"ticker": "BT-A.L", "name": "BT GROUP PLC ORD 5P", "price": 198.15, "currency": "GBp", "d3": -2.002968898557652, "w1": -1.5648331383599206, "m1": 5.962563581007687, "vol": -79.76795882087723}, {"ticker": "JDW.L", "name": "WETHERSPOON ( J.D.) PLC ORD 2P", "price": 804.625, "currency": "GBp", "d3": -1.212400245549417, "w1": 3.422236503856041, "m1": 12.221059972105998, "vol": -92.13017102451808}, {"ticker": "SBRY.L", "name": "SAINSBURY (J) PLC ORD 28 4/7P", "price": 351.3, "currency": "GBp", "d3": -1.1814380329201828, "w1": -2.25375799695996, "m1": 3.9964477465505106, "vol": -95.8240513990423}, {"ticker": "ADTN", "name": "ADTRAN Holdings, Inc.", "price": 7.5, "currency": "USD", "d3": -15.349883853012303, "w1": -10.926366602824098, "m1": -41.72494120675593, "vol": -4.643624741091388}];
+const CATALYSTS = [{"ticker": "AXTI", "tag": "Earnings", "dir": "up", "reg": false, "text": "Blowout Q2 (Jul 30): record revenue $47.6M (+164% YoY), EPS $0.19 vs $0.07 est; Q3 guide well above consensus and a Lumentum capacity deal through 2031. AI / data-center indium-phosphide demand."}, {"ticker": "SATL", "tag": "Earnings", "dir": "up", "reg": false, "text": "Q2 (~Aug 5): revenue +259% to $15.9M, first-ever positive operating income and adjusted EBITDA ($2.8M); 'Merlin' constellation launch slated for Oct 2026."}, {"ticker": "AAOI", "tag": "Regulatory", "dir": "up", "reg": true, "text": "Run into the Aug 6 Q2 report on a proposed U.S. ban on Chinese optical transceivers plus AI-datacenter demand for 800G / 1.6T parts. Policy tailwind for a domestic supplier."}, {"ticker": "COHR", "tag": "Analyst", "dir": "up", "reg": true, "text": "AI-optics demand; JPMorgan raised its target to $435 (Overweight) ahead of Aug 12 earnings. Also a beneficiary of potential U.S. curbs on Chinese transceivers."}, {"ticker": "TE", "tag": "Deal", "dir": "up", "reg": false, "text": "Aug 3: agreement to supply Clearway Energy 641MW of domestic solar modules; bounce off oversold levels. Still down over 1 month on an earlier weak Q2 loss."}, {"ticker": "ZETA", "tag": "Earnings", "dir": "up", "reg": false, "text": "Q2 (Aug 4): 20th straight beat-and-raise \u2014 revenue +44% to $443M, FY guide lifted, strong Athena AI adoption."}, {"ticker": "AMPX", "tag": "Earnings", "dir": "up", "reg": false, "text": "Q2: revenue +126% to $34M (beat) and FY26 guidance raised to \u2265$140M on defense / drone demand."}, {"ticker": "NVDA", "tag": "Regulatory", "dir": "up", "reg": true, "text": "~12% five-session rally on reports China will allow limited H200 chip purchases (Alibaba / ByteDance / DeepSeek) plus broad chip-sector strength ahead of Aug 26 earnings."}, {"ticker": "HAIN", "tag": "Sector", "dir": "up", "reg": false, "text": "Sector read-through: peer Utz Brands agreed to be acquired by Intersnack, lifting packaged-food valuations. Not company-specific."}, {"ticker": "MELI", "tag": "Earnings", "dir": "flat", "reg": false, "text": "Q2 (Aug 5): revenue +50% to $10.2B (beat) and EPS beat, but shares slipped on margin compression (operating margin 6.7%, \u2212550bps) from shipping / credit spend. Volume +216%."}, {"ticker": "DUOL", "tag": "Earnings", "dir": "down", "reg": false, "text": "Q2 (Aug 5): revenue +18.3% to $298.5M and an EPS beat, but fell ~10-12% on light Q3 guidance ($302M vs $304M est) and monetization concerns. Volume +262%."}, {"ticker": "FLNC", "tag": "Earnings", "dir": "down", "reg": false, "text": "Q3 (Aug 5/6): cut FY26 guidance ($2.9\u20133.1B vs $3.2\u20133.6B), ~$400M of deliveries pushed to FY27, gross margin fell to 5.1% and now guiding to an EBITDA loss. Volume +268%."}, {"ticker": "ADTN", "tag": "Earnings", "dir": "down", "reg": false, "text": "Cut preliminary Q2 guidance (revenue $280\u2013282M vs $283\u2013303M) on a delayed customer project, then an official miss ($0.04 EPS vs $0.13 est). Down 42% over the month."}, {"ticker": "BYND", "tag": "Earnings", "dir": "down", "reg": false, "text": "Q2: revenue beat but adjusted EPS miss (\u2212$0.09); U.S. retail \u22129.9%, foodservice \u221227.6%, EBITDA loss $27.7M. Early pop faded to a selloff; heavy volume (+170%) reads as turnaround speculation."}, {"ticker": "LNZA", "tag": "Momentum", "dir": "up", "reg": false, "text": "No dated catalyst \u2014 Q2 due Aug 14. Volume +96% suggests momentum / speculation ahead of the print."}];
+
+const fmtPct = v => v == null ? "—" : (v >= 0 ? "+" : "") + v.toFixed(1) + "%";
+const fmtPrice = v => v == null ? "—" :
+  v.toLocaleString(undefined, {maximumFractionDigits: v < 10 ? 3 : 2});
+
+// diverging magnitude -> background tint, clamped near 15%.
+function tint(v){
+  if (v == null) return "";
+  const a = Math.min(Math.abs(v) / 15, 1);
+  const alpha = (0.10 + 0.42 * a).toFixed(3);
+  return v >= 0
+    ? "background:rgba(34,160,107," + alpha + ");color:var(--pos-ink)"
+    : "background:rgba(229,72,77," + alpha + ");color:var(--neg-ink)";
+}
+
+let sortKey = "w1", sortDir = -1, filterStr = "";
+
+function render(){
+  const tb = document.getElementById("tbody");
+  const rows = DATA
+    .filter(r => r.ticker.toLowerCase().includes(filterStr) ||
+                 (r.name || "").toLowerCase().includes(filterStr))
+    .slice()
+    .sort((a, b) => {
+      let x = a[sortKey], y = b[sortKey];
+      if (typeof x === "string") return sortDir * x.localeCompare(y);
+      if (x == null) return 1; if (y == null) return -1;
+      return sortDir * (x - y);
+    });
+  tb.innerHTML = rows.map(r =>
+    '<tr>' +
+      '<td class="mono tk">' + r.ticker + '</td>' +
+      '<td class="name" title="' + (r.name||'').replace(/"/g,'&quot;') + '">' + (r.name||'') + '</td>' +
+      '<td class="mono r">' + fmtPrice(r.price) + '<span class="cur">' + (r.currency||'') + '</span></td>' +
+      '<td class="mono r" style="' + tint(r.d3) + '">' + fmtPct(r.d3) + '</td>' +
+      '<td class="mono r" style="' + tint(r.w1) + '">' + fmtPct(r.w1) + '</td>' +
+      '<td class="mono r" style="' + tint(r.m1) + '">' + fmtPct(r.m1) + '</td>' +
+      '<td class="mono r" style="' + tint(r.vol) + '">' + fmtPct(r.vol) + '</td>' +
+    '</tr>').join("");
+}
+
+document.querySelectorAll("th.sortable, th.txt").forEach(th => {
+  th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    if (!k) return;
+    if (sortKey === k) sortDir *= -1;
+    else { sortKey = k; sortDir = (k === "ticker" || k === "name") ? 1 : -1; }
+    document.querySelectorAll("th").forEach(h =>
+      h.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    render();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", e => {
+  filterStr = e.target.value.trim().toLowerCase();
+  render();
+});
+
+// catalyst cards, ordered by |1W move|
+const byTicker = Object.fromEntries(DATA.map(r => [r.ticker, r]));
+const cardsHtml = CATALYSTS
+  .map(c => Object.assign({}, c, { r: byTicker[c.ticker] }))
+  .sort((a, b) => Math.abs((b.r && b.r.w1) || 0) - Math.abs((a.r && a.r.w1) || 0))
+  .map(c => {
+    const w1 = c.r && c.r.w1;
+    const arrow = c.dir === "up" ? "▲" : c.dir === "down" ? "▼" : "◆";
+    const cls = c.dir === "up" ? "up" : c.dir === "down" ? "down" : "flat";
+    return '' +
+      '<article class="card ' + (c.reg ? 'reg' : '') + '">' +
+        '<div class="card-top">' +
+          '<span class="mono tk">' + c.ticker + '</span>' +
+          '<span class="tag" data-tag="' + c.tag + '">' + c.tag + '</span>' +
+          (c.reg ? '<span class="tag reg-tag">⚑ Regulatory</span>' : '') +
+          '<span class="card-move mono ' + cls + '">' + arrow + ' ' + fmtPct(w1) + ' <em>1W</em></span>' +
+        '</div>' +
+        '<p class="card-name">' + ((c.r && c.r.name) || '') + '</p>' +
+        '<p class="card-text">' + c.text + '</p>' +
+      '</article>';
+  }).join("");
+document.getElementById("cards").innerHTML = cardsHtml;
+
+// theme toggle
+const root = document.documentElement;
+document.getElementById("theme").addEventListener("click", () => {
+  const cur = root.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : cur === "light" ? "dark"
+    : (matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark");
+  root.setAttribute("data-theme", next);
+});
+
+render();
+</script>
