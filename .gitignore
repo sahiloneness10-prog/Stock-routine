@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .streamlit/secrets.toml
 .venv/
+
+# generated snapshot outputs
+dashboard.html
+data.json
