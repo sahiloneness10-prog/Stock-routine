@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .streamlit/secrets.toml
 .venv/
+
+# generated dashboard + data caches
+watchlist_pulse.html
+*.watchlist_pulse.html
+.yf_cache/
+data.json

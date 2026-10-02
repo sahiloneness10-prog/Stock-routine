@@ -123,39 +123,52 @@ def _clean_html(text: str) -> str:
 
 @st.cache_data(ttl=900, show_spinner=False)
 def load_news(ticker: str) -> list[dict]:
-    """Return a normalised list of recent news items for a ticker."""
+    """Return a normalised list of recent news items for a ticker.
+
+    yfinance's ``Ticker.news`` property currently returns nothing in many
+    environments, so we go through the Search API, which still carries the feed.
+    """
     try:
-        raw = yf.Ticker(ticker).news or []
+        raw = yf.Search(ticker, news_count=8, enable_fuzzy_query=False).news or []
     except Exception:
         return []
-    items = []
-    for entry in raw:
-        c = entry.get("content", entry) if isinstance(entry, dict) else {}
-        if not c:
+    items, seen = [], set()
+    for c in raw:
+        if not isinstance(c, dict):
             continue
-        provider = c.get("provider") or {}
-        link = (c.get("clickThroughUrl") or c.get("canonicalUrl") or {})
+        title = (c.get("title") or "").strip()
+        if not title or title in seen:
+            continue
+        seen.add(title)
+        pt = c.get("providerPublishTime")
         items.append(
             {
-                "title": c.get("title", "Untitled"),
-                "summary": _clean_html(c.get("summary") or c.get("description") or ""),
-                "publisher": provider.get("displayName", "") if isinstance(provider, dict) else "",
-                "url": link.get("url", "") if isinstance(link, dict) else "",
-                "published": c.get("pubDate") or c.get("displayTime") or "",
-                "type": c.get("contentType", ""),
+                "title": title,
+                "summary": _clean_html(c.get("summary") or ""),
+                "publisher": c.get("publisher", ""),
+                "url": c.get("link", ""),
+                "published": pt,
+                "type": c.get("type", ""),
             }
         )
+    items.sort(key=lambda x: x["published"] or 0, reverse=True)
     return items
 
 
 # --------------------------------------------------------------------------- #
 # Presentation helpers
 # --------------------------------------------------------------------------- #
-def _fmt_published(value: str) -> str:
+def _fmt_published(value) -> str:
     if not value:
         return ""
+    # Search API returns a unix timestamp; older feeds used ISO strings.
+    if isinstance(value, (int, float)):
+        try:
+            return dt.datetime.fromtimestamp(value, dt.timezone.utc).strftime("%b %d, %Y %H:%M UTC")
+        except (ValueError, OSError, OverflowError):
+            return ""
     try:
-        ts = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+        ts = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
         return ts.strftime("%b %d, %Y %H:%M UTC")
     except (ValueError, AttributeError):
         return str(value)
