@@ -1,0 +1,26 @@
+{
+  "caveat": "Yahoo Finance's per-ticker news feed returned nothing this run and general web-search results lagged real time, so the notes below are the most recent credible background found for each mover, with dates — not confirmed same-day causes. Always verify against the company's investor-relations page or SEC/exchange filings before acting.",
+  "notes": {
+    "HAIN": [
+      {"text": "Hain Celestial has dismissed its CEO and launched a strategic review; management trimmed its fiscal outlook (organic revenue guided to roughly -7% to -8%) citing SKU-simplification and snacks-divestiture headwinds, and formal FY27 guidance is deferred until the review concludes. Barclays had earlier cut the stock to Underweight. The ~49% weekly fall on a 954% volume spike points to a fresh negative catalyst around earnings/guidance.", "source": "just-food / Nasdaq-Zacks / New Hope", "url": "https://www.just-food.com/news/hain-celestial-trims-organic-growth-outlook-on-headwinds-from-sku-simplification"}
+    ],
+    "NBIS": [
+      {"text": "Nvidia disclosed a ~9.3% stake in Nebius (tied to a $2B AI-infrastructure investment) and the stock joined the Nasdaq-100 in June 2026. Shares have been highly volatile and well off their mid-2026 highs; the current pullback comes on a large (~172%) volume spike.", "source": "Barchart", "url": "https://www.barchart.com/story/news/3388181/nbis-stock-alert-what-to-know-as-nvidia-reveals-9-3-stake-in-nebius"}
+    ],
+    "LNZA": [
+      {"text": "LanzaTech recently secured a ~$40M preferred-stock agreement after an earlier ~$20M registered direct offering; dilutive raises have pressured the shares, which trade far below their 52-week range high.", "source": "TipRanks", "url": "https://www.tipranks.com/news/company-announcements/lanzatech-global-secures-40m-in-preferred-stock-agreement"}
+    ],
+    "BYND": [
+      {"text": "Beyond Meat posted soft results and guided Q2 revenue below consensus; it briefly traded as a meme stock in October 2026. Analysts still model a revenue decline into 2027.", "source": "Nasdaq / StockAnalysis", "url": "https://www.nasdaq.com/articles/can-beyond-meat-bynd-recover-2026"}
+    ],
+    "XIACY": [
+      {"text": "Xiaomi (ADR) has rallied on strong EV momentum (outselling Tesla in parts of China) and index inclusion; this week's ~15% ADR gain extends a strong year-to-date run.", "source": "Barchart", "url": "https://www.barchart.com/story/news/30490178/xiaomi-outselling-tesla-in-china"}
+    ],
+    "AAOI": [
+      {"text": "Applied Optoelectronics has been volatile around its optical-networking/AI demand narrative, with several sharp single-day moves after its most recent quarterly report; shares are down from a mid-2026 52-week high near $233.", "source": "Weiss Ratings", "url": "https://weissratings.com/en/instant-news-alerts/applied-optoelectronics-inc-aaoi-down-8-7-should-i-step-aside"}
+    ],
+    "SIDU": [
+      {"text": "Sidus Space was named a contract awardee under the Missile Defense Agency SHIELD program (Golden Dome initiative) in late 2025; the micro-cap remains highly volatile with no confirmed fresh catalyst for the current slide.", "source": "Benzinga", "url": "https://benzinga.com/z/41339700"}
+    ]
+  }
+}
