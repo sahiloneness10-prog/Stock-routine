@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .streamlit/secrets.toml
 .venv/
+
+# Per-run generated snapshot artifacts
+metrics.json

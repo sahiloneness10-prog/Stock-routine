@@ -1,0 +1,82 @@
+{
+  "HAIN": [
+    {
+      "title": "Shares collapse ~53% as Aurelius international-business sale conditions go unmet; Chapter 11 reportedly under consideration",
+      "source": "Seeking Alpha / Bloomberg-sourced reports",
+      "date": "Oct 15, 2026",
+      "summary": "Hain Celestial plunged after saying conditions for the sale of its international business to Aurelius were not met, and reports said the company is weighing a Chapter 11 filing. It withheld FY2027 guidance and canceled its Q4 analyst Q&A, citing its strategic review and sensitive lender talks over a critical credit-agreement amendment due in December. Management said it had ~$186M of revolver liquidity, net leverage of 4.5x vs a 5.5x covenant, and remained in compliance. The driver of the ~43% weekly / ~71% monthly drop."
+    }
+  ],
+  "NOK": [
+    {
+      "title": "Nokia slides into/after Q3 2026 print on flat-profit fears; volume ~3x normal",
+      "source": "MarketBeat / Benzinga / investor previews",
+      "date": "Late Oct 2026",
+      "summary": "Weakness (-18% week on a ~204% volume spike vs its 20-day average) centered on the Q3 report window. Nokia had guided Q3 net sales +3% to +7% q/q but comparable operating profit roughly flat, tied to software revenue-recognition timing, and investors had flagged flat-profit concerns since Q2. Confirm the final Q3 figures on Nokia's IR page."
+    }
+  ],
+  "SAP": [
+    {
+      "title": "SAP Q3 2026 beats: cloud +26%, first >€10B revenue quarter; operating-profit outlook trimmed slightly",
+      "source": "Constellation Research / Quiver / German financial press",
+      "date": "Oct 2026",
+      "summary": "Revenue +13% to ~€10.3B (first time above €10B), cloud revenue +26%, current cloud backlog ~€24.1B (+28% y/y). SAP guided cloud revenue toward the top of its €25.8-26.2B range but nudged its adjusted operating-profit outlook down to €11.8-12.2B on the Dremio and Prior Labs acquisitions. It flagged that cloud growth was helped by a multi-quarter catch-up from customers returning from financial distress. Supports the +7% week / +14% month move on a ~129% volume spike."
+    }
+  ],
+  "COHR": [
+    {
+      "title": "Caught in an AI-optical sector selloff on hot inflation and rising long-end yields",
+      "source": "Quiver Quant / TIKR / AAII",
+      "date": "Oct 14-18, 2026",
+      "summary": "Down ~17-21% on the week, including a single ~9% session, driven mainly by sector-wide selling in AI optical/networking names rather than company news. A hotter-than-expected September CPI pushed the 30-year Treasury yield to ~5.63%, and profit-taking hit high-flying optics stocks. Fundamentals stayed strong (fiscal Q4 revenue ~$2.05B, +34% y/y; next earnings Nov 4, 2026); most analysts still rate it a buy."
+    }
+  ],
+  "AAOI": [
+    {
+      "title": "Falls with the AI-optics group on inflation shock and AI-capex funding worries",
+      "source": "TIKR / Quiver Quant / Weiss Ratings",
+      "date": "Oct 14, 2026",
+      "summary": "Dropped ~12% in a session (and ~19% on the week) after September CPI ran hot, with no company-specific news. Selling in the group intensified after Broadcom's and Intel's CEOs warned capital could become AI's tightest bottleneck -- a direct worry for AAOI, whose revenue leans on hyperscalers funding data centers. Concentration risk (top-10 customers ~99% of Q2 revenue) and a recent ~$600M at-the-market raise add to the caution."
+    }
+  ],
+  "MOH": [
+    {
+      "title": "Molina Q3 2026 beats on adjusted EPS; FY26 guidance reaffirmed; CEO flags 'the beginning of the turn in Medicaid margins'",
+      "source": "SEC 8-K / 24-7 Wall St. / German financial press",
+      "date": "Oct 21, 2026 (call Oct 22)",
+      "summary": "Adjusted EPS $0.89 vs ~$0.79 consensus; premium revenue ~$10.5B; GAAP net income fell to $38M from $79M a year earlier and the medical care ratio rose to 92.9%. Molina reaffirmed FY26 guidance (~$42B premium revenue, adjusted EPS >=$5.25). CEO Joseph Zubretsky pointed to a plateau in medical-cost trend and 2027 rate updates. Day-of reaction was choppy (one report cited -8.5%), but the beat and 'turn' narrative underpin the +14% month on a ~136% volume spike."
+    }
+  ],
+  "SWMR": [
+    {
+      "title": "Swarmer continues a steep speculative unwind; no single company catalyst identified",
+      "source": "AAII / Trade-Ideas (auto-generated; treat as approximate)",
+      "date": "Oct 2026",
+      "summary": "The drone-swarm AI name is down ~61% over the month amid risk-off trading in speculative small caps and mixed analyst actions; no official filing or mainstream story pinned to the October leg. 52-week range roughly $11-$83, so the move is large even on a full-year basis. Worth checking SEC filings directly."
+    }
+  ],
+  "TE": [
+    {
+      "title": "T1 Energy extends its decline; weakness traces to Q2 loss guidance and warrant-expiration overhang",
+      "source": "Benzinga / Trade-Ideas (aggregator figures approximate)",
+      "date": "Oct 2026",
+      "summary": "Down ~21% on the week and ~43% on the month with no clean October catalyst found. The loss-making solar/energy name fell earlier in 2026 after preliminary Q2 results projected a ~$34-37M net loss from continuing operations and as warrants approached expiration. Confirm against T1 Energy's IR page / SEC filings."
+    }
+  ],
+  "VYX": [
+    {
+      "title": "NCR Voyix rallies with no confirmed fresh catalyst; standalone-POS transformation story in focus",
+      "source": "Market data pages (May 2026 context; Oct catalyst not confirmed)",
+      "date": "Oct 2026",
+      "summary": "Up ~14% on the week and ~21% on the month, but no specific October news surfaced. Prior coverage ties optimism to the company's separation from its ATM and digital-banking businesses to focus on point-of-sale and digital commerce. Treat as a momentum move pending an earnings date or company announcement."
+    }
+  ],
+  "BYND": [
+    {
+      "title": "Beyond Meat trades on heavy volume -- a historically volatile, heavily shorted name",
+      "source": "General market context",
+      "date": "Oct 2026",
+      "summary": "A ~87% volume spike vs its 20-day average accompanied a ~11% three-day pop. BYND has a well-documented history of sharp, sentiment- and short-squeeze-driven swings (notably an October 2025 social-media squeeze) against weak fundamentals; no confirmed October 2026 company catalyst was found, so treat the move as flow/positioning-driven pending a filing or news item."
+    }
+  ]
+}
